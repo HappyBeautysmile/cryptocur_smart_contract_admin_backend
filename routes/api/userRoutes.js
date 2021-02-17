@@ -19,7 +19,7 @@ router.post("/login", passport.authenticate("local", {
 // /api/users/signup
 // route to logout the user
 router.post("/signup", function(req, res, next) {
-  db.User.findOne({username: req.body.username}, function(err, user) {
+  db.User.findOne({email: req.body.email}, function(err, user) {
     if (err) throw err;
     if (user) {
       console.log("user already exists")
@@ -27,7 +27,9 @@ router.post("/signup", function(req, res, next) {
     }
     if (!user) {
       let newUser = new db.User({
-        username: req.body.username,
+        firstName: req.body.firstName,
+        lastName: req.body.lastName,
+        email: req.body.email,
         password: req.body.password
       })
       newUser.password = newUser.generateHash(req.body.password);
