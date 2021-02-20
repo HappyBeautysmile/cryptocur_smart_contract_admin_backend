@@ -1,7 +1,8 @@
 const mongoose = require("mongoose");
 const bcrypt = require('bcrypt');
 const Schema = mongoose.Schema;
-
+const userStatus = require("../config/GlobalVariable/UserStatus")
+const userRole = require("../config/GlobalVariable/UserRole")
 const session = () => {
   var  UserSchema = new Schema({
     date: {
@@ -12,7 +13,6 @@ const session = () => {
         type :String,
         required : true,
         unique: true
-
     },
     inittime : {
         type: String,
@@ -22,7 +22,18 @@ const session = () => {
         type: String,
         unique: false,
     },
-   
+   status : {
+     type: String,
+     default: userStatus.CLOSED
+   },
+   role : {
+     type : Number,
+     default: userRole.Customer
+   },
+   avatar :{
+     type :String ,
+     default : "avatar1.jpg"
+   }
 });
 return mongoose.model("session", UserSchema)
 }
@@ -56,12 +67,22 @@ const usermodel = () =>{
       },
       required: [true, "password is required"]
     },
-    
     createdAt: {
       type: Date,
       default: Date.now()
     },
-    
+   status : {
+     type: String,
+     default: userStatus.CLOSED
+   },
+   role : {
+     type : Number,
+     default: userRole.Customer
+   },
+   avatar :{
+     type :String ,
+     default : "avatar1.jpg"
+   }
   });
   
   usersSchema.methods.generateHash = function (password) {
