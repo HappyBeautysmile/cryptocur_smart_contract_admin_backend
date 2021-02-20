@@ -3,12 +3,15 @@ const authMiddleware = require("../../config/middleware/authMiddleware");
 const UserControllers =require("../../controller/userController")
 // /api/users/login
 // route to login the user
-
 router.post("/signin",UserControllers.signin);
 router.post("/signup",UserControllers.signup);
+
 router.post("/get_userinfor",authMiddleware.isLoggedIn,UserControllers.getuser);
 router.post("/logout",authMiddleware.logoutUser);
-
+router.post("/",authMiddleware.isLoggedIn,UserControllers.getAllUsers)
+router.post("/delete_user" ,authMiddleware.isLoggedIn ,UserControllers.deleteUser);
+router.post("/edit_user" ,authMiddleware.isLoggedIn ,UserControllers.editUser);
+router.post("/get_user" ,authMiddleware.isLoggedIn , UserControllers.getUser);
 
 // /api/users/signup
 // route to logout the user

@@ -16,7 +16,7 @@ exports.signin  = async (req,res,next) =>{
     email : user.email
   }
   var auth =  IndexControll.encrypt(JSON.stringify(hashstr));
-  return res.send({status : true,data : auth});
+  return res.send({status : true, data : auth});
 }
 
 exports.getuser = async (req,res,next) =>{
@@ -26,6 +26,57 @@ exports.getuser = async (req,res,next) =>{
   }
   res.send(user);
   return next();
+}
+
+exports.getAllUsers = async (req,res,next) =>{
+  var users = await User.find()
+  console.log(users);
+  return res.send({status : "get_success" , data : users});
+}
+
+exports.deleteUser =  async (req, res , next) =>{
+  var user = await User.findOne({email : req.body.user_email});
+  if(user)
+  {
+    var user = await User.deleteOne({email : req.body.user_email});
+    return res.send({status : true,data : user});
+  }
+  else{
+    return res.send({status : false ,error : "user doesn't exist"});
+  }
+}
+
+exports.editUser = async (req, res , next) =>{
+  var user = await User.findOne({email : req.body.user_email});
+  if(user)
+  {
+    const filter = {email : req.body.user_email};
+    const updateDoc = {
+      $set: {
+        firstName:req.body.user_firstName,
+        lastName: req.body.user_lastName,
+        password: req.body.user_password
+      },
+    };
+    const options = { upsert: true };
+    var user = await User.updateOne(filter ,updateDoc, options);
+    return res.send({status : true,data : user});
+  }
+  else{
+    return res.send({status : false ,error : "user doesn't exist"});
+  }
+}
+
+exports.getUser = async (req, res, next)=>{
+  const filter = {email : req.body.user_email};
+  var user = await User.findOne(filter);
+  if(user)
+  {
+    return res.send({status : true,data : user});
+  }
+  else{
+    return res.send({status : false ,error : "user doesn't exist"});
+  }
 }
 
 exports.signup = async (req,res,next) =>{

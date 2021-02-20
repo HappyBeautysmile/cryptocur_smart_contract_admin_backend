@@ -25,7 +25,7 @@ app.listen(PORT, (err)=> {
     console.log(`connected on port ${PORT}`)
 });
 
-mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost/react-auth-simple", { useNewUrlParser: true ,useFindAndModify: false,useUnifiedTopology: true,useCreateIndex : true }, function(err) {
+mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost/zedcoin", { useNewUrlParser: true ,useFindAndModify: false,useUnifiedTopology: true,useCreateIndex : true }, function(err) {
     if (err) throw err;
     console.log(`mongoose connection successful`);
 });
