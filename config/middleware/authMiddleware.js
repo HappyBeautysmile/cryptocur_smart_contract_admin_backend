@@ -1,47 +1,57 @@
+const {User,usersessionmodel} = require("../../models/Users");
+const BASECONTROL = require("../../controller/indexcontroller");
+const Config = require("../index")
+const expires = Config.expiretime;
+
 const auth = {
     
     // checks if the user is logged in, if not, redirect to the 
     // unauthorized route
-    isLoggedIn: (req, res, next)=> {
-        
+    isLoggedIn: async (req, res, next)=> {
 
-        next();
-        // if(req.isAuthenticated()){
-        //     console.log('user authenticated');
-        //     next();
-        // } else{
-        //     console.log("user not authenticated");
-        //     res.redirect('/api/users/unauthorized')
-        // }
+        var hash = decodeURIComponent(req.headers.authorization);
+        var decod = BASECONTROL.decrypt(hash);
+        if(decod){
+            decod = JSON.parse(decod);
+            let user = await BASECONTROL.BfindOne(User,{_id : decod._id});
+            if(user){
+                req.user = user;
+                console.log(user.email)
+                let last = await BASECONTROL.BfindOne(usersessionmodel,{hash:hash});
+                if(last){
+                    let passtime = (new Date().valueOf() - parseInt(last.inittime))/1000;
+                    console.log("---- passtime -----",passtime)
+                    if(passtime > expires){
+                        await BASECONTROL.BfindOneAndDelete(usersessionmodel,{hash:hash});
+                        return res.json({session : true});
+                    }else{
+                        let up =  await BASECONTROL.BfindOneAndUpdate(usersessionmodel,{hash:hash},{inittime:new Date().valueOf()});
+                    }
+                }else{
+                    let row = {
+                        hash:hash,
+                        inittime:new Date().valueOf(),
+                        email :user.email,
+                    }
+                    await BASECONTROL.data_save(row,usersessionmodel);
+                }
+                next();
+            }else{
+                return res.json({session : true});
+            }
+        }else{
+            return res.json({session : true});
+        }
     },
 
     // middleware function to log out the user
-    // logoutUser: (req, res, next)=> {
-    //     if(req.isAuthenticated()){
-    //         console.log('logged out successfully')
-    //         req.logout();
-    //         next();
-    //     } else {
-    //         next();
-    //     }
-    // },
+    logoutUser: async (req, res, next)=> {
+        var hash = decodeURIComponent(req.headers.authorization);
+        await BASECONTROL.BfindOneAndDelete(usersessionmodel,{hash:hash});
+        res.send({status : true});
+        return next();
+    },
 
-    // checks to see if the user is authenticated, then checks if they are an admin
-    // if yes, move on, otherwise send to unauthorized route
-    // isAdmin: (req, res, next)=> {
-    //     if (req.isAuthenticated()) {
-    //         console.log('user confirmed');
-    //         if(req.user.admin) {
-    //             console.log('Administer Confirmed');
-    //             next();
-    //         } else {
-    //             console.log('you must be an administer to continue');
-    //             res.redirect('/api/users/unauthorized')
-    //         }
-    //     } else {
-    //         res.redirect('/api/users/unauthorized')
-    //     }
-    // }
 }
 
 module.exports = auth;

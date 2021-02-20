@@ -24,3 +24,66 @@ exports.decrypt = (text) => {
 	}
 }
 
+
+
+exports.BfindOne = async (model,condition = {})=>{
+	try{
+		var outdata = null; 
+		await model.findOne(condition).then(rdata=>{
+			if(!rdata){
+				outdata = false;
+			}else{
+				outdata = rdata;
+			}
+		});
+		return outdata;
+	}catch(e){
+		return false;
+	}
+}
+
+exports.data_save =async (indata,model)=>{
+	// try{
+		var handle = null;
+		var savehandle = new model(indata);
+		await savehandle.save().then(rdata=>{
+			if(!rdata){
+				handle = false;
+			}else{
+				handle = rdata;
+			}
+		});
+		return handle;
+	// }catch(e){
+	// 	return false;
+	// }
+}
+
+exports.BfindOneAndUpdate = async (model,condition = {},data) =>{
+	// try{
+		var updatehandle = await model.findOneAndUpdate(condition,data,{ new: true,upsert: true,})
+		if(!updatehandle){
+			return false
+		}else{
+			return updatehandle		
+		}
+	// }catch(e){
+	// 	return false;
+	// }
+}
+
+exports.BfindOneAndDelete =async (model,condition)=>{
+	try{
+		var deletehandle = null;
+		await model.findOneAndDelete(condition).then(rdata=>{
+			deletehandle = rdata;
+		});
+		if(!deletehandle){
+			return false;
+		}else{
+			return deletehandle;
+		}
+	}catch(e){
+		return false;
+	}
+}
