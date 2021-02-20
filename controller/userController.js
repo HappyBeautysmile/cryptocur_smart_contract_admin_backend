@@ -20,10 +20,12 @@ exports.signin  = async (req,res,next) =>{
 }
 
 exports.getuser = async (req,res,next) =>{
-  var user = await User.findOne({email : req.body.email});
-  if(user){
-    return res.send(user);
+  let user = {
+    status : true,
+    data : req.user
   }
+  res.send(user);
+  return next();
 }
 
 exports.signup = async (req,res,next) =>{
@@ -42,6 +44,8 @@ exports.signup = async (req,res,next) =>{
   if(!save){
     return res.send( { status :false,error : "server error"});
   }else{
+      //  console.log("success regist");
+       var auth = await User.findOne({email : req.body.email});
        return res.send({status : true,data : auth});
   }
 }

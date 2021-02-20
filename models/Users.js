@@ -2,6 +2,31 @@ const mongoose = require("mongoose");
 const bcrypt = require('bcrypt');
 const Schema = mongoose.Schema;
 
+const session = () => {
+  var  UserSchema = new Schema({
+    date: {
+        type: Date,
+        default: Date.now
+    },
+    hash : {
+        type :String,
+        required : true,
+        unique: true
+
+    },
+    inittime : {
+        type: String,
+        required: true
+    },
+    email: {
+        type: String,
+        unique: false,
+    },
+   
+});
+return mongoose.model("session", UserSchema)
+}
+
 const usermodel = () =>{
 
   const usersSchema = new Schema({
@@ -54,4 +79,5 @@ const usermodel = () =>{
 
 module.exports = {
   User: usermodel(),
+  usersessionmodel : session()
 };

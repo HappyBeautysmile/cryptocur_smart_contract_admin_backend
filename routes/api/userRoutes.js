@@ -6,7 +6,8 @@ const UserControllers =require("../../controller/userController")
 
 router.post("/signin",UserControllers.signin);
 router.post("/signup",UserControllers.signup);
-router.post("/getuser",authMiddleware.isLoggedIn,UserControllers.getuser);
+router.post("/get_userinfor",authMiddleware.isLoggedIn,UserControllers.getuser);
+router.post("/logout",authMiddleware.logoutUser);
 
 
 // /api/users/signup
