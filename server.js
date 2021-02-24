@@ -1,6 +1,6 @@
 const express = require("express");
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = 3000;
 const mongoose = require("mongoose");
 const routes = require("./routes");
 const logger = require("morgan");
@@ -25,7 +25,7 @@ app.listen(PORT, (err)=> {
     console.log(`connected on port ${PORT}`)
 });
 
-mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost/zedcoin", { useNewUrlParser: true ,useFindAndModify: false,useUnifiedTopology: true,useCreateIndex : true }, function(err) {
+mongoose.connect( "mongodb://localhost/zedcoin", { useNewUrlParser: true ,useFindAndModify: false,useUnifiedTopology: true,useCreateIndex : true }, function(err) {
     if (err) throw err;
     console.log(`mongoose connection successful`);
 });

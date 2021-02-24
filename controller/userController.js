@@ -29,8 +29,9 @@ exports.getuser = async (req,res,next) =>{
 }
 
 exports.getAllUsers = async (req,res,next) =>{
+  console.log( req.user,"--------------")
   var users = await User.find()
-  console.log(users);
+  // console.log(users);
   return res.send({status : "get_success" , data : users});
 }
 
