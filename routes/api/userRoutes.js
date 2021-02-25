@@ -1,6 +1,9 @@
 const router = require("express").Router();
 const authMiddleware = require("../../config/middleware/authMiddleware");
-const UserControllers =require("../../controller/userController")
+const UserControllers =require("../../controller/userController");
+const multer = require('multer');
+const config = require('../../db');
+const Basecontroll = require("../../controller/indexcontroller")
 // /api/users/login
 // route to login the user
 router.post("/signin",UserControllers.signin);
@@ -10,7 +13,7 @@ router.post("/get_userinfor",authMiddleware.isLoggedIn,UserControllers.getuser);
 router.post("/logout",authMiddleware.logoutUser);
 router.post("/userlist",authMiddleware.isLoggedIn,UserControllers.getAllUsers)
 router.post("/delete_user" ,authMiddleware.isLoggedIn ,UserControllers.deleteUser);
-router.post("/edit_user" ,authMiddleware.isLoggedIn ,UserControllers.editUser);
+router.post("/edit_user" ,authMiddleware.isLoggedIn ,multer({dest:config.BASEURL}).any(),Basecontroll.imageupload,UserControllers.editUser);
 router.post("/get_user" ,authMiddleware.isLoggedIn , UserControllers.getUser);
 
 // /api/users/signup

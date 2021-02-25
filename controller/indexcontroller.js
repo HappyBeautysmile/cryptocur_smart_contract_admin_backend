@@ -1,6 +1,8 @@
 const crypto = require('crypto');
 const ENCRYPTION_KEY = "e807f1fcf82d132f9bb018ca6738a19f"; // Must be 256 bits (32 characters)
 const IV_LENGTH = 16; // For AES, this is always 16
+const config = require('../db');
+const fs = require("fs")
 
 exports.encrypt = (text) => {
     let iv = crypto.randomBytes(IV_LENGTH);
@@ -85,5 +87,27 @@ exports.BfindOneAndDelete =async (model,condition)=>{
 		}
 	}catch(e){
 		return false;
+	}
+}
+
+
+exports.imageupload = (req,res,next) =>{
+	if(req.files.length){
+		var filename = req.files[0].filename;
+		var filetype = req.files[0].mimetype.split("/")[1];
+		var now_path = config.BASEURL  + filename;
+		var new_path = config.BASEURL  + filename + "." + filetype;
+		fs.rename(now_path , new_path ,  (err) =>{
+			if(err){
+				req.body.imagesrc = false;
+			}else{
+				var img = filename + "." + filetype;
+				req.body.imagesrc = img;
+				next();
+			}
+		});
+	}else{
+		req.body.imagesrc = false;
+		next();
 	}
 }
