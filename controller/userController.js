@@ -48,23 +48,26 @@ exports.deleteUser =  async (req, res , next) =>{
 }
 
 exports.editUser = async (req, res , next) =>{
-
+  console.log("edit_user");
   var userdata = req.body;
   var user = await User.findOne({email : userdata.email});
-  if(user && req.body.imagesrc)
+  if(user)
   {
+    // const avatarImage =  userdata.imagesrc ? userdata.imagesrc : ;
     const filter = {email : userdata.email};
     const password = user.generateHash(userdata.password);
-    const updateDoc = {
+    const updateDoc1 = {
       lastName : userdata.lastName,
       firstName : userdata.firstName,
       password : password,
-      avatar : req.body.imagesrc,
     }
-    newUser.password = newUser.generateHash(req.body.password);
-
-    var user = await IndexControll.BfindOneAndUpdate(User,filter ,updateDoc);
-
+    const updateDoc2 = {
+        lastName : userdata.lastName,
+        firstName : userdata.firstName,
+        password : password,
+        avatar : userdata.imagesrc,
+      }
+    var user = await IndexControll.BfindOneAndUpdate(User,filter , userdata.imagesrc ?  updateDoc2 : updateDoc1);
     return res.send({status : true,data : user});
   }
   else{

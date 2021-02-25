@@ -13,7 +13,9 @@ app.use(cors());
 app.use("*",(req,res,next)=>{
     let expires = new Date(new Date().valueOf() + 30 * 24 * 60 * 60 * 1000);
     res.cookie('cookie1', 'value1', { sameSite: 'lax',httpOnly : true ,expires :expires ,path : "/" });   next(); });
-app.use(express.static("client/build"));
+app.use(express.static("./client"));
+app.use(express.static("./client/build"));
+app.use(express.static("./client/upload"));
 app.use(bodyParser.json({limit: "15360mb", type:'application/json'}));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.urlencoded({ extended: true }));
@@ -21,9 +23,11 @@ app.use(express.json());
 app.use(logger("dev"));
 app.use(flash());
 app.use("/api", routes);
+
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'client/build/index.html'));  
   });
+
 app.listen(Dbconfig.port, (err)=> {
     if (err) throw err;
     console.log(`connected on port ${Dbconfig.port}`)

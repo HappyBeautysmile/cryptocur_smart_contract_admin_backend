@@ -81,7 +81,7 @@ const usermodel = () =>{
    },
    avatar :{
      type :String ,
-     default : "avatar1.jpg"
+     default : "default.jpeg"
    }
   });
   
