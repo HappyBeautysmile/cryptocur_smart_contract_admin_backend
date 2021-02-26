@@ -68,6 +68,7 @@ exports.editUser = async (req, res , next) =>{
         avatar : userdata.imagesrc,
       }
     var user = await IndexControll.BfindOneAndUpdate(User,filter , userdata.imagesrc ?  updateDoc2 : updateDoc1);
+
     return res.send({status : true,data : user});
   }
   else{
