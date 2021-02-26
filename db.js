@@ -1,3 +1,3 @@
 module.exports={
-    "BASEURL" : __dirname+"/client/upload/",
+    "BASEURL" : __dirname+"/client/upload/avatar",
 }
