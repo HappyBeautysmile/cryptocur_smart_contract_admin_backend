@@ -13,7 +13,7 @@ router.post("/get_userinfor",authMiddleware.isLoggedIn,UserControllers.getuser);
 router.post("/logout",authMiddleware.logoutUser);
 router.post("/userlist",authMiddleware.isLoggedIn,UserControllers.getAllUsers)
 router.post("/delete_user" ,authMiddleware.isLoggedIn ,UserControllers.deleteUser);
-router.post("/edit_user" ,authMiddleware.isLoggedIn ,multer({dest:config.BASEURL}).any(),Basecontroll.imageupload,UserControllers.editUser);
+router.post("/edit_user" ,authMiddleware.isLoggedIn,multer({dest:config.BASEURL}).any() ,Basecontroll.imageupload,UserControllers.editUser);
 router.post("/get_user" ,authMiddleware.isLoggedIn , UserControllers.getUser);
 
 // /api/users/signup

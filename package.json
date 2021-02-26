@@ -1,37 +1,23 @@
 {
-  "name": "react-auth",
+  "name": "backend",
   "version": "1.0.0",
-  "description": "react app with passport auth",
-  "main": "server.js",
+  "description": "ok",
+  "main": "index.js",
   "scripts": {
-    "start": "nodemon server.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/evanejtucker/react-auth.git"
+    "start": "nodemon server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
-  "author": "Evan E J Tucker",
+  "author": "",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/evanejtucker/react-auth/issues"
-  },
-  "homepage": "https://github.com/evanejtucker/react-auth#readme",
   "dependencies": {
     "axios": "^0.21.1",
     "bcrypt": "^5.0.0",
     "body-parser": "^1.19.0",
-    "connect-flash": "^0.1.1",
     "cors": "^2.8.5",
-    "express": "^4.17.1",
-    "fs": "0.0.1-security",
-    "mongoose": "^5.6.8",
-    "morgan": "^1.9.1",
+    "express": "^4.16.3",
+    "mongoose": "^5.11.15",
     "multer": "^1.4.2",
-    "path": "^0.12.7"
-  },
-  "devDependencies": {
-    "concurrently": "^5.3.0",
-    "nodemon": "^2.0.7"
+    "nodemon": "^2.0.6"
   }
 }

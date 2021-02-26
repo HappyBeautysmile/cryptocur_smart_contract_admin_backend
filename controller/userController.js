@@ -49,6 +49,7 @@ exports.deleteUser =  async (req, res , next) =>{
 
 exports.editUser = async (req, res , next) =>{
   console.log("edit_user");
+  console.log(req.body);
   var userdata = req.body;
   var user = await User.findOne({email : userdata.email});
   if(user)
@@ -61,13 +62,10 @@ exports.editUser = async (req, res , next) =>{
       firstName : userdata.firstName,
       password : password,
     }
-    const updateDoc2 = {
-        lastName : userdata.lastName,
-        firstName : userdata.firstName,
-        password : password,
-        avatar : userdata.imagesrc,
-      }
-    var user = await IndexControll.BfindOneAndUpdate(User,filter , userdata.imagesrc ?  updateDoc2 : updateDoc1);
+    if(userdata.imagesrc){
+      updateDoc1["avatar"] = userdata.imagesrc
+    }
+    var user = await IndexControll.BfindOneAndUpdate(User,filter , updateDoc1);
 
     return res.send({status : true,data : user});
   }
@@ -89,6 +87,7 @@ exports.getUser = async (req, res, next)=>{
 }
 
 exports.signup = async (req,res,next) =>{
+  console.log
   var user = await User.findOne({email : req.body.email});
   if(user){
     return res.send({ status :false, error : "user already exists"});
