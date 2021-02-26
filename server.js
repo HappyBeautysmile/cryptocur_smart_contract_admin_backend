@@ -25,7 +25,7 @@ app.use(flash());
 app.use("/api", routes);
 
 app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'client/build/index.html'));  
+    res.sendFile(path.join(__dirname, 'client/stellar_admin_frontend_build/index.html'));  
   });
 
 app.listen(Dbconfig.port, (err)=> {
