@@ -14,7 +14,7 @@ app.use("*",(req,res,next)=>{
     let expires = new Date(new Date().valueOf() + 30 * 24 * 60 * 60 * 1000);
     res.cookie('cookie1', 'value1', { sameSite: 'lax',httpOnly : true ,expires :expires ,path : "/" });   next(); });
 app.use(express.static("./client"));
-app.use(express.static("./client/build"));
+app.use(express.static("./client/stellar_admin_frontend_build"));
 app.use(express.static("./client/upload"));
 app.use(bodyParser.json({limit: "15360mb", type:'application/json'}));
 app.use(bodyParser.urlencoded({ extended: true }));
