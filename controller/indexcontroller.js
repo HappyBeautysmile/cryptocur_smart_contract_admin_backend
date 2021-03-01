@@ -92,7 +92,7 @@ exports.BfindOneAndDelete =async (model,condition)=>{
 
 
 exports.imageupload = (req,res,next) =>{
-	console.log(req.body);
+	// console.log(req.body);
 	if(req.files.length){
 		var filename = req.files[0].filename;
 		var filetype = req.files[0].mimetype.split("/")[1];
@@ -112,3 +112,18 @@ exports.imageupload = (req,res,next) =>{
 		next();
 	}
 }
+
+
+exports.fileRemove =(baseUrl , filename) => {
+	// config.BASEURL
+	const url = baseUrl + "/" + filename;
+	try {
+	  fs.unlinkSync(url)
+	  //file removed
+	  return true;
+	} catch(err) {
+	  console.error(err)
+	  return false;
+	}
+	return false;
+ }

@@ -11,12 +11,14 @@ const auth = {
 
         var hash = decodeURIComponent(req.headers.authorization);
         var decod = BASECONTROL.decrypt(hash);
+
+        // console.log("here is there?");
         if(decod){
             decod = JSON.parse(decod);
             let user = await BASECONTROL.BfindOne(User,{_id : decod._id});
             if(user){
                 req.user = user;
-                console.log(user.email)
+                // console.log(user.email)
                 let last = await BASECONTROL.BfindOne(usersessionmodel,{hash:hash});
                 if(last){
                     let passtime = (new Date().valueOf() - parseInt(last.inittime))/1000;

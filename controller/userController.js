@@ -1,8 +1,10 @@
 const {User} = require("../models/Users")
 const IndexControll = require("./indexcontroller")
+const config = require('../db');
+const fs = require('fs')
 
 exports.signin  = async (req,res,next) =>{
-  console.log(req.body)
+  // console.log(req.body)
   var user = await User.findOne({email : req.body.email});
   if(!user){
     return res.send({status:false,error : "user not found"});
@@ -29,7 +31,7 @@ exports.getuser = async (req,res,next) =>{
 }
 
 exports.getAllUsers = async (req,res,next) =>{
-  console.log( req.user,"--------------")
+  // console.log( req.user,"--------------")
   var users = await User.find()
   // console.log(users);
   return res.send({status : "get_success" , data : users});
@@ -48,10 +50,13 @@ exports.deleteUser =  async (req, res , next) =>{
 }
 
 exports.editUser = async (req, res , next) =>{
-  console.log("edit_user");
-  console.log(req.body);
+  // console.log("edit_user");
+  // console.log(req.body);
   var userdata = req.body;
   var user = await User.findOne({email : userdata.email});
+  const previewAvatar = user.avatar;
+  // console.log("update user");
+  console.log(previewAvatar);
   if(user)
   {
     // const avatarImage =  userdata.imagesrc ? userdata.imagesrc : ;
@@ -63,7 +68,11 @@ exports.editUser = async (req, res , next) =>{
       password : password,
     }
     if(userdata.imagesrc){
-      updateDoc1["avatar"] = userdata.imagesrc
+      updateDoc1["avatar"] = userdata.imagesrc;
+      if(previewAvatar!=='default.jpeg')
+      {
+        IndexControll.fileRemove(config.BASEURL , previewAvatar);
+      }
     }
     var user = await IndexControll.BfindOneAndUpdate(User,filter , updateDoc1);
 
@@ -87,7 +96,6 @@ exports.getUser = async (req, res, next)=>{
 }
 
 exports.signup = async (req,res,next) =>{
-  console.log
   var user = await User.findOne({email : req.body.email});
   if(user){
     return res.send({ status :false, error : "user already exists"});
