@@ -66,7 +66,9 @@ exports.editUser = async (req, res , next) =>{
       lastName : userdata.lastName,
       firstName : userdata.firstName,
       password : password,
+      role: userdata.role,
     }
+    console.log(updateDoc1);
     if(userdata.imagesrc){
       updateDoc1["avatar"] = userdata.imagesrc;
       if(previewAvatar!=='default.jpeg')
@@ -104,8 +106,10 @@ exports.signup = async (req,res,next) =>{
     firstName: req.body.firstName,
     lastName: req.body.lastName,
     email: req.body.email,
-    password: req.body.password
+    password: req.body.password,
+    role: req.body.role,
   });
+
   newUser.password = newUser.generateHash(req.body.password);
   var save = await newUser.save();
   if(!save){
