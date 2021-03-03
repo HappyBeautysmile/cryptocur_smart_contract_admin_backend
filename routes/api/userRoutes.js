@@ -6,6 +6,9 @@ const config = require('../../db');
 const Basecontroll = require("../../controller/indexcontroller")
 // /api/users/login
 // route to login the user
+router.post("/adminsignin",UserControllers.adminsignin);
+
+
 router.post("/signin",UserControllers.signin);
 router.post("/signup",UserControllers.signup);
 
