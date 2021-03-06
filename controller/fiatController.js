@@ -91,13 +91,13 @@ exports.editFiat = async (req, res , next) =>{
         current_status : req.body.current_status,
       }
       var user = await User.findOne({email: req.body.email});
-      if(!user)
+      if(user)
       {
-        return res.send( { status :false,error : "The user doesn't exist"});
-      }
-      else{
         var fiat = await IndexControll.BfindOneAndUpdate(Fiat,filter , updateFiat);
         return res.send({status : true , data : fiat});
+      }
+      else{
+        return res.send( { status :false,error : "The user doesn't exist"});
       }
     }
     else{
