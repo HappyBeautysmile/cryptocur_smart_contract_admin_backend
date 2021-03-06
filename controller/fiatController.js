@@ -68,7 +68,7 @@ exports.getFiat = async (req, res, next)=>{
     }
 }
 exports.deleteFiat =  async (req, res , next) =>{
-    const filter ={name : req.body.name ,owner: req.headers.email};
+    const filter ={name : req.body.name ,owner: req.body.email};
     var fiat = await Fiat.findOne(filter);
     if(fiat)
     {
@@ -80,18 +80,27 @@ exports.deleteFiat =  async (req, res , next) =>{
     }
 }
 exports.editFiat = async (req, res , next) =>{
-    const filter ={name : req.body.name ,owner: req.headers.email};
+    const filter ={name : req.body.oldName ,owner: req.body.oldEmail};
+    console.log(req.body);
     var fiat = await Fiat.findOne(filter);
     if(fiat)
     {
       const updateFiat = {
         name : req.body.name,
+        owner : req.body.email,
         current_status : req.body.current_status,
       }
-      var fiat = await IndexControll.BfindOneAndUpdate(Fiat,filter , updateFiat);
-      return res.send({status : true , data : fiat});
+      var user = await User.findOne({email: req.body.email});
+      if(!user)
+      {
+        return res.send( { status :false,error : "The user doesn't exist"});
+      }
+      else{
+        var fiat = await IndexControll.BfindOneAndUpdate(Fiat,filter , updateFiat);
+        return res.send({status : true , data : fiat});
+      }
     }
     else{
-      return res.send({status : false , error : "That fiat's name doesn't exist"});
+      return res.send({status : false , error : "That fiat's name or that owner doesn't exist"});
     }
   }
