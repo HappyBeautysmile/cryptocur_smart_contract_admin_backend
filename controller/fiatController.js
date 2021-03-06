@@ -1,4 +1,5 @@
 const {Fiat} = require("../models/Fiat")
+const {User} = require("../models/Users")
 const IndexControll = require("./indexcontroller")
 
 
@@ -21,6 +22,34 @@ exports.add = async (req,res,next) =>{
          return res.send({status : true,data : currency});
     }
 }
+
+exports.newFiat = async (req,res,next) =>{
+  var user = await User.findOne({email: req.body.email});
+  if(user)
+  {
+    var fiat = await Fiat.findOne({name : req.body.name ,owner: req.body.email});
+    if(fiat){
+      return res.send({ status :false, error : "fiat already exists"});
+    }
+    let newFiat = new Fiat({
+        owner:req.body.email,
+        name: req.body.name,
+        current_status: req.body.current_status
+    });
+    var save = await newFiat.save();
+    if(!save){
+      return res.send( { status :false,error : "server error"});
+    }else{
+         console.log("A new fiat was added!");
+         var fiat = await Fiat.findOne({name : req.body.name ,owner: req.headers.email});
+         return res.send({status : true, data : fiat});
+    }
+  }
+  else{
+    return res.send( { status :false,error : "The user doesn't exist"});
+  }
+}
+
 exports.getFiatList = async (req,res,next) =>{
     // console.log( req.user,"--------------")
     var fiats = await Fiat.find()
