@@ -79,6 +79,7 @@ exports.deleteFiat =  async (req, res , next) =>{
         return res.send({status : false ,error : "That fiat's name doesn't exist"});
     }
 }
+
 exports.editFiat = async (req, res , next) =>{
     const filter ={name : req.body.oldName ,owner: req.body.oldEmail};
     console.log(req.body);
@@ -96,11 +97,7 @@ exports.editFiat = async (req, res , next) =>{
         var fiat = await IndexControll.BfindOneAndUpdate(Fiat,filter , updateFiat);
         return res.send({status : true , data : fiat});
       }
-      else{
-        return res.send( { status :false,error : "The user doesn't exist"});
-      }
+      return res.send( { status :false,error : "The user doesn't exist"});
     }
-    else{
       return res.send({status : false , error : "That fiat's name or that owner doesn't exist"});
-    }
   }
