@@ -12,8 +12,8 @@ const FiatControllers =require("../../controller/fiatController");
 router.post("/add", authMiddleware.isLoggedIn,FiatControllers.add);
 router.post("/newfiat", authMiddleware.isLoggedIn,FiatControllers.newFiat);
 router.post("/fiatlist", authMiddleware.isLoggedIn,FiatControllers.getFiatList);
+router.post("/userfiatlist", authMiddleware.isLoggedIn,FiatControllers.getUserFiatList);
 router.post("/getfiat", authMiddleware.isLoggedIn,FiatControllers.getFiat);
 router.post("/delete", authMiddleware.isLoggedIn,FiatControllers.deleteFiat);
 router.post("/edit", authMiddleware.isLoggedIn, FiatControllers.editFiat);
-
 module.exports = router;

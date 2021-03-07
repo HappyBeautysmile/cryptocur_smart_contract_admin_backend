@@ -56,6 +56,11 @@ exports.getFiatList = async (req,res,next) =>{
     // console.log(users);
     return res.send({status : "get_success" , data : fiats});
 }
+exports.getUserFiatList = async (req,res,next) =>{
+  var fiats = await Fiat.find({owner:req.body.email});
+  // console.log(users);
+  return res.send({status : "get_success" , data : fiats});
+}
 exports.getFiat = async (req, res, next)=>{
     const filter ={name : req.body.name ,owner: req.headers.email};
     var fiat = await Fiat.findOne(filter);
