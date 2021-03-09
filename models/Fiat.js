@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
+
 const currencyQuantity = () =>{
   var CurrencyQuantitySchema = new Schema({
     currencyName:{
@@ -32,6 +33,8 @@ const fiatmodel = () => {
       type : Object,
     },
 });
+
+
 // invest: {
 //   type : Object,
 // },

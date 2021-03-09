@@ -1,5 +1,7 @@
 const {Fiat} = require("../models/Fiat")
 const {User} = require("../models/Users")
+const {Currency} = require("../models/Currency")
+const CurrencyControll = require("./currencyController")
 const IndexControll = require("./indexcontroller")
 
 
@@ -57,8 +59,49 @@ exports.getFiatList = async (req,res,next) =>{
     return res.send({status : "get_success" , data : fiats});
 }
 exports.getUserFiatList = async (req,res,next) =>{
-  var fiats = await Fiat.find({owner:req.body.email});
-  // console.log(users);
+  // console.log( "--------------")
+  var fiats = await Fiat.find({owner : req.body.email});
+  var currencieslist = await Currency.find();
+  
+  for(var i = 0 ; i < fiats.length ; i++)
+  {
+    if(fiats[i].current_status==null)
+    {
+      fiats[i].current_status = [];
+    }
+    for(var t = 0 ; t < currencieslist.length ; t++)
+    {
+      if(fiats[i].current_status[currencieslist[t].name]==null)
+      {
+        // fiats[i].current_status[currencieslist[t].name]=;
+        fiats[i].current_status[t] ={name : currencieslist[t].name,exchange_rate : currencieslist[t].exchange_rate ,quantity:0};
+        // fiats[i].current_status[currencieslist[t].name].exchangeQuantity =  0;
+      }
+      else{
+        fiats[i].current_status[t].exchange_rate = currencieslist[t].exchange_rate;
+        // fiats[i].current_status[t].exchangeQuantity = 0;
+        // fiats[i].current_status[currencieslist[t].name].exchangeQuantity =  0;
+      }
+    }
+  }
+  // console.log(fiats);
+  // [
+  //   {
+  //     createdAt: 2021-03-06T11:54:36.648Z,
+  //     _id: 60436e52164d7159d08c5cf5,
+  //     owner: 'admin@gmail.com',
+  //     name: 'Love',
+  //     __v: 0,
+  //     current_status: {
+            // {
+            //   USD: { exchange_rate: 1, quantity: 0 ,exchangeQuantity:0},
+            //   EUR: { exchange_rate: 1.2, quantity: 0 ,exchangeQuantity:0}
+            // }
+  //     }
+  //   },
+  // ]
+  // console.log(fiats[0].current_status) ;
+  // console.log(fiats) ;
   return res.send({status : "get_success" , data : fiats});
 }
 exports.getFiat = async (req, res, next)=>{

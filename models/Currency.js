@@ -8,9 +8,9 @@ const currencymodel = () => {
         required : true,
     },
     exchange_rate: {
-     type : Number,
-     required : true,
-   },
+      type : Number,
+      required : true,
+    },
    avatar :{
      type :String ,
      default : "default.jpg"
