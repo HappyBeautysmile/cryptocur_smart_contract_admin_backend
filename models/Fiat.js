@@ -34,22 +34,9 @@ const fiatmodel = () => {
     },
 });
 
-
-// invest: {
-//   type : Object,
-// },
-// profit: {
-//   type : Object,
-// },
-// withdraw: {
-//   type : Object,
-// },
-// deposit: {
-//   type : Object,
-// },
-
-return mongoose.model("fiat", fiatSchema)
+  return mongoose.model("fiat", fiatSchema)
 }
+
 module.exports = {
   Fiat: fiatmodel(),
 };
