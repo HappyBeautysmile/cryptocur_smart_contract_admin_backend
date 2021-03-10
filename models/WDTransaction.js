@@ -32,6 +32,10 @@ const WDTransactionModel = () => {
         type: Date,
         default: Date.now()
     },
+    bankAddress:{
+        type: String,
+        required: true
+    }
 });
 return mongoose.model("WDTransaction", WDSchema)
 }

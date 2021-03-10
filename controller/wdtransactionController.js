@@ -9,7 +9,8 @@ exports.add = async (req,res,next) =>{
       fiatName: req.body.fiatName,
       actiontype:req.body.actiontype,
       quantity:req.body.quantity,
-      currency:req.body.currency
+      currency:req.body.currency,
+      bankAddress:req.body.bankAddress
     });
     console.log(wdtransaction);
     let save = await wdtransaction.save();  

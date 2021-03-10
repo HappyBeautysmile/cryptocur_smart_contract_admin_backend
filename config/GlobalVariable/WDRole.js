@@ -1,6 +1,6 @@
 const { model } = require("mongoose");
 
 module.exports ={
-    Withdraw: "withdraw",
-    Deposit: "deposit",
+    Withdraw: "Withdraw",
+    Deposit: "Deposit",
 }
