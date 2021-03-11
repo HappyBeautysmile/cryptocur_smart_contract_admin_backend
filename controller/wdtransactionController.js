@@ -1,5 +1,7 @@
 const {WDTransaction} = require("../models/WDTransaction")
-const IndexControll = require("./indexcontroller")
+const {Fiat} = require("../models/Fiat")
+const IndexControll = require("./indexcontroller");
+const { Accepted, Pendding, Rejected } = require("../config/GlobalVariable/TransactionRole");
 
 
 exports.add = async (req,res,next) =>{
@@ -21,14 +23,27 @@ exports.add = async (req,res,next) =>{
          let wdtransaction = await WDTransaction.find();
          return res.send({status : true, data : wdtransaction});
     }
-  }
+}
+
 exports.getAllwdTransactions = async (req,res,next) =>{
     // console.log( req.user,"--------------")
     let wdtransaction = await WDTransaction.find();
     // console.log(users);
     return res.send({status : "get_success" , data : wdtransaction});
   }
-exports.deletewdTransaction =  async (req, res , next) =>{
+exports.getAllwdRequestTransactions = async (req,res,next) =>{
+  // console.log( req.user,"--------------")
+  // {
+        // Pendding : 0
+        // Rejected : 1
+        // Accepted : 2
+  // }
+  let wdtransaction = await WDTransaction.find({process:0});
+  // console.log(users);
+  return res.send({status : "get_success" , data : wdtransaction});
+}
+
+  exports.deletewdTransaction =  async (req, res , next) =>{
     const filter ={_id :req.body._id};
     var wdtransaction = await WDTransaction.findOne(filter);
     if(wdtransaction)
@@ -41,17 +56,76 @@ exports.deletewdTransaction =  async (req, res , next) =>{
     }
 }
 exports.editwdTransaction= async (req, res , next) =>{
-    var filter = {_id :req.body._id};
+    let requestedInform = {
+      _id :req.body._id,
+      fiatName : req.body.fiatName,
+      owner: req.body.owner,
+      actiontype: req.body.actiontype,
+      quantity: req.body.quantity,
+      process:req.body.process,
+      currency :req.body.currency
+    }
+    var filter = {_id :requestedInform._id};
     var wdtransaction = await WDTransaction.findOne(filter);
-    console.log(wdtransaction);
+    var successString="success";
+    // console.log(wdtransaction);
     if(wdtransaction)
     {
-      console.log("wdtransaction");
       const updateWDtransaction = {
-        process : req.body.process,
+        process : requestedInform.process,
       }
-      var wdtransaction = await IndexControll.BfindOneAndUpdate(WDTransaction,filter , updateWDtransaction);
-      return res.send({status : true,data : wdtransaction});
+      if(requestedInform.process === 2 ) // accept action
+      {
+        //   update fiat account .. withdraw and deoposit
+        // console.log("wdtransaction");
+        var fiatFilter = {name:requestedInform.fiatName ,owner:requestedInform.owner}
+        // console.log("requestedInform.fiatName : " +requestedInform.fiatName + "   owner : " +requestedInform.owner);
+        var choosedFiat = await Fiat.findOne(fiatFilter);
+        if(!choosedFiat) return res.send({status : false ,error : "That Fiat account doesn't exist"});
+        if(choosedFiat.current_status)
+        {
+          var len = choosedFiat.current_status.length ;
+          for(var i = 0 ; i < len ; i++)
+          {
+            if(choosedFiat.current_status[i].name === requestedInform.currency)
+            {
+              if(requestedInform.actiontype=="Deposit") 
+              {
+                choosedFiat.current_status[i].quantity +=requestedInform.quantity;
+                successString =requestedInform.quantity + " was successfully " + requestedInform.actiontype + "to" + requestedInform.fiatName +".";
+              }
+              else 
+              {
+                choosedFiat.current_status[i].quantity -= requestedInformy.quantity;
+                successString =requestedInform.quantity + " was successfully " + requestedInform.actiontype + "from" + requestedInform.fiatName +".";
+              }
+              break;
+            }
+          }
+          if(i === len)
+          {
+            // console.log("add new currency");
+            choosedFiat.current_status[i] ={name: requestedInform.currency ,quantity:requestedInform.quantity};
+          }
+        }
+        else{
+          // When it doesn't exist
+
+          // console.log("when it doesn't exit choosedFiatsss");
+          choosedFiat={current_status:[]};
+          choosedFiat.current_status[0] ={name: requestedInform.currency ,quantity:requestedInform.quantity};
+        }
+        // console.log(choosedFiat);
+        // console.log("choosedFiat");
+        const updateFiatCurrent_status = {
+          current_status : choosedFiat.current_status,
+       }
+      // console.log(successString);
+
+        await IndexControll.BfindOneAndUpdate(Fiat, fiatFilter , updateFiatCurrent_status);
+      }
+      var wdtransaction = await IndexControll.BfindOneAndUpdate(WDTransaction, filter , updateWDtransaction);
+      return res.send({status : true,data : wdtransaction , success:successString});
     }
     else{
       return res.send({status : false ,error : "That Withdraw/deopsit Transaction doesn't exist"});

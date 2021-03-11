@@ -10,6 +10,7 @@ const WDTransactionController =require("../../controller/wdtransactionController
 // router.post("/add",authMiddleware.isLoggedIn,CurrencyControllers.add);
 router.post("/add",authMiddleware.isLoggedIn, WDTransactionController.add);
 router.post("/allwdtransactions", authMiddleware.isLoggedIn,WDTransactionController.getAllwdTransactions);
+router.post("/allwdrequesttransactions", authMiddleware.isLoggedIn,WDTransactionController.getAllwdRequestTransactions);
 router.post("/delete",authMiddleware.isLoggedIn, WDTransactionController.deletewdTransaction);
 router.post("/edit",authMiddleware.isLoggedIn, WDTransactionController.editwdTransaction);
 
