@@ -71,7 +71,7 @@ exports.getUserFiatList = async (req,res,next) =>{
     }
     for(var t = 0 ; t < currencieslist.length ; t++)
     {
-      if(fiats[i].current_status[currencieslist[t].name]==null)
+      if(fiats[i].current_status[t]==null)
       {
         // fiats[i].current_status[currencieslist[t].name]=;
         fiats[i].current_status[t] ={name : currencieslist[t].name,exchange_rate : currencieslist[t].exchange_rate ,quantity:0};
@@ -82,6 +82,7 @@ exports.getUserFiatList = async (req,res,next) =>{
         // fiats[i].current_status[t].exchangeQuantity = 0;
         // fiats[i].current_status[currencieslist[t].name].exchangeQuantity =  0;
       }
+      // console.log( fiats[i].current_status[t].name + " : " + fiats[i].current_status[t].quantity);
     }
   }
   // console.log(fiats);
@@ -101,7 +102,6 @@ exports.getUserFiatList = async (req,res,next) =>{
   //   },
   // ]
   // console.log(fiats[0].current_status) ;
-  // console.log(fiats) ;
   return res.send({status : "get_success" , data : fiats});
 }
 
