@@ -82,38 +82,65 @@ exports.editwdTransaction= async (req, res , next) =>{
         // console.log("requestedInform.fiatName : " +requestedInform.fiatName + "   owner : " +requestedInform.owner);
         var choosedFiat = await Fiat.findOne(fiatFilter);
         if(!choosedFiat) return res.send({status : false ,error : "That Fiat account doesn't exist"});
-        if(choosedFiat.current_status)
+        // console.log("Deposit : " +choosedFiat.actiontype);
+
+        if(requestedInform.actiontype ==="Deposit")
         {
-          var len = choosedFiat.current_status.length ;
-          for(var i = 0 ; i < len ; i++)
+          // console.log("Deposit : " + "");
+          if(choosedFiat.current_status)
           {
-            if(choosedFiat.current_status[i].name === requestedInform.currency)
+            var len = choosedFiat.current_status.length ;
+            for(var i = 0 ; i < len ; i++)
             {
-              if(requestedInform.actiontype=="Deposit") 
+              if(choosedFiat.current_status[i].name === requestedInform.currency)
               {
                 choosedFiat.current_status[i].quantity +=requestedInform.quantity;
-                successString =requestedInform.quantity + " was successfully " + requestedInform.actiontype + "to" + requestedInform.fiatName +".";
+                break;
               }
-              else 
-              {
-                choosedFiat.current_status[i].quantity -= requestedInformy.quantity;
-                successString =requestedInform.quantity + " was successfully " + requestedInform.actiontype + "from" + requestedInform.fiatName +".";
-              }
-              break;
+            }
+            if(i === len)
+            {
+              // console.log("add new currency");
+              choosedFiat.current_status[i] ={name: requestedInform.currency ,quantity:requestedInform.quantity};
             }
           }
-          if(i === len)
-          {
-            // console.log("add new currency");
-            choosedFiat.current_status[i] ={name: requestedInform.currency ,quantity:requestedInform.quantity};
+          else{
+            // When it doesn't exist
+            // console.log("when it doesn't exit choosedFiatsss");
+            choosedFiat={current_status:[]};
+            choosedFiat.current_status[0] ={name: requestedInform.currency ,quantity:requestedInform.quantity};
           }
+          successString =requestedInform.quantity + " was successfully " + requestedInform.actiontype + " to " + requestedInform.fiatName +".";
         }
-        else{
-          // When it doesn't exist
-
-          // console.log("when it doesn't exit choosedFiatsss");
-          choosedFiat={current_status:[]};
-          choosedFiat.current_status[0] ={name: requestedInform.currency ,quantity:requestedInform.quantity};
+        else
+        {
+          if(!choosedFiat.current_status)
+          {
+            return res.send({status : false ,error : "Money doesn't exist"});
+          }
+          else
+          {
+            var len = choosedFiat.current_status.length
+            for(var i = 0 ; i < len ; i++)
+            {
+              if(choosedFiat.current_status[i].name === requestedInform.currency)
+              {
+                if(choosedFiat.current_status[i].quantity < requestedInform.quantity)
+                {
+                  return res.send({status : false ,error : "Insufficient transfer amount."});
+                }
+                else{
+                  choosedFiat.current_status[i].quantity -=requestedInform.quantity;
+                  successString =requestedInform.quantity + " was successfully " + requestedInform.actiontype + " From " + requestedInform.fiatName +".";
+                  break;
+                }
+              }
+            }
+            if(i === len)
+            {
+              return res.send({status : false ,error : requestedInform.currency + " doesn't exist."});
+            }
+          }
         }
         // console.log(choosedFiat);
         // console.log("choosedFiat");
