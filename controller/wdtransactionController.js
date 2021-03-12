@@ -55,8 +55,9 @@ exports.getOwnerwdTransactions = async (req,res,next) =>{
         // Rejected : 1
         // Accepted : 2
   // }
-  let wdtransaction = await WDTransaction.find().sort({createdAt:-1});
-  // console.log(users);
+  // let wdtransaction = await WDTransaction.find({owner:req.body.owner}).sort({createdAt:-1});
+  let wdtransaction = await WDTransaction.find({owner:req.body.owner}).sort({createdAt:-1});
+  console.log(wdtransaction);
   return res.send({status : "get_success" , data : wdtransaction});
 }
 
