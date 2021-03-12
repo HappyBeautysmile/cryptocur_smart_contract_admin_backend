@@ -25,12 +25,6 @@ exports.add = async (req,res,next) =>{
     }
 }
 
-exports.getAllwdTransactions = async (req,res,next) =>{
-    // console.log( req.user,"--------------")
-    let wdtransaction = await WDTransaction.find();
-    // console.log(users);
-    return res.send({status : "get_success" , data : wdtransaction});
-  }
 exports.getAllwdRequestTransactions = async (req,res,next) =>{
   // console.log( req.user,"--------------")
   // {
@@ -42,6 +36,19 @@ exports.getAllwdRequestTransactions = async (req,res,next) =>{
   // console.log(users);
   return res.send({status : "get_success" , data : wdtransaction});
 }
+
+exports.getAllwdTransactions = async (req,res,next) =>{
+  // console.log( req.user,"--------------")
+  // {
+        // Pendding : 0
+        // Rejected : 1
+        // Accepted : 2
+  // }
+  let wdtransaction = await WDTransaction.find().sort({createdAt:-1});
+  // console.log(users);
+  return res.send({status : "get_success" , data : wdtransaction});
+}
+
 
   exports.deletewdTransaction =  async (req, res , next) =>{
     const filter ={_id :req.body._id};
