@@ -48,6 +48,17 @@ exports.getAllwdTransactions = async (req,res,next) =>{
   // console.log(users);
   return res.send({status : "get_success" , data : wdtransaction});
 }
+exports.getOwnerwdTransactions = async (req,res,next) =>{
+  // console.log( req.user,"--------------")
+  // {
+        // Pendding : 0
+        // Rejected : 1
+        // Accepted : 2
+  // }
+  let wdtransaction = await WDTransaction.find({owner:req.body.owner}).sort({createdAt:-1});
+  // console.log(users);
+  return res.send({status : "get_success" , data : wdtransaction});
+}
 
 
   exports.deletewdTransaction =  async (req, res , next) =>{
