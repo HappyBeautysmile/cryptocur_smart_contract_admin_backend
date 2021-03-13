@@ -71,6 +71,18 @@ exports.deleteUser =  async (req, res , next) =>{
   }
 }
 
+exports.personalUdate = async (req, res, next) => {
+  var userdata = req.body;
+  var filter = {email:userdata.email};
+  var user = await User.findOne();
+  const updatePerson = {
+    lastName : userdata.lastName,
+    firstName : userdata.firstName,
+  }
+  var user = await IndexControll.BfindOneAndUpdate(User,filter , updatePerson);
+  return res.send({status : true,data : user});
+}
+
 exports.editUser = async (req, res , next) =>{
   // console.log("edit_user");
   // console.log(req.body);
@@ -78,19 +90,16 @@ exports.editUser = async (req, res , next) =>{
   var user = await User.findOne({email : userdata.email});
   const previewAvatar = user.avatar;
   // console.log("update user");
-  console.log(previewAvatar);
+  console.log(userdata);
   if(user)
   {
-    // const avatarImage =  userdata.imagesrc ? userdata.imagesrc : ;
     const filter = {email : userdata.email};
-    const password = user.generateHash(userdata.password);
     const updateDoc1 = {
       lastName : userdata.lastName,
       firstName : userdata.firstName,
-      password : password,
-      role: userdata.role,
+      password : userdata.password,
+      role: userdata.role
     }
-    console.log(updateDoc1);
     if(userdata.imagesrc){
       updateDoc1["avatar"] = userdata.imagesrc;
       if(previewAvatar!=='default.jpeg')
@@ -99,7 +108,6 @@ exports.editUser = async (req, res , next) =>{
       }
     }
     var user = await IndexControll.BfindOneAndUpdate(User,filter , updateDoc1);
-
     return res.send({status : true,data : user});
   }
   else{

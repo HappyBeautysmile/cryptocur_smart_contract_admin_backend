@@ -18,6 +18,7 @@ router.post("/userlist",authMiddleware.isLoggedIn,UserControllers.getAllUsers)
 router.post("/delete_user" ,authMiddleware.isLoggedIn ,UserControllers.deleteUser);
 router.post("/edit_user" ,authMiddleware.isLoggedIn,multer({dest:config.BASEURL}).any() ,Basecontroll.imageupload,UserControllers.editUser);
 router.post("/get_user" ,authMiddleware.isLoggedIn , UserControllers.getUser);
+router.post("/personal_update" ,authMiddleware.isLoggedIn , UserControllers.personalUdate);
 
 // /api/users/signup
 // route to logout the user
