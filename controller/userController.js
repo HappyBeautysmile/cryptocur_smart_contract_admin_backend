@@ -94,12 +94,16 @@ exports.editUser = async (req, res , next) =>{
   if(user)
   {
     const filter = {email : userdata.email};
-    const updateDoc1 = {
+    const updateDoc1 =({
       lastName : userdata.lastName,
       firstName : userdata.firstName,
       password : userdata.password,
       role: userdata.role
-    }
+    });
+    let NewUser = new User({
+      password : userdata.password,
+    })
+    updateDoc1.password = NewUser.generateHash(req.body.password);
     if(userdata.imagesrc){
       updateDoc1["avatar"] = userdata.imagesrc;
       if(previewAvatar!=='default.jpeg')
