@@ -17,5 +17,4 @@ router.post("/userfiatlist", authMiddleware.isLoggedIn,FiatControllers.getUserFi
 router.post("/getfiat", authMiddleware.isLoggedIn,FiatControllers.getFiat);
 router.post("/delete", authMiddleware.isLoggedIn,FiatControllers.deleteFiat);
 router.post("/edit", authMiddleware.isLoggedIn, FiatControllers.editFiat);
-router.post("/edit", authMiddleware.isLoggedIn, FiatControllers.editFiat);
 module.exports = router;

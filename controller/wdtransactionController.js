@@ -1,5 +1,6 @@
 const {WDTransaction} = require("../models/WDTransaction")
 const {Fiat} = require("../models/Fiat")
+const {Currency} = require("../models/Currency");
 const IndexControll = require("./indexcontroller");
 const { Accepted, Pendding, Rejected } = require("../config/GlobalVariable/TransactionRole");
 
@@ -57,7 +58,7 @@ exports.getOwnerwdTransactions = async (req,res,next) =>{
   // }
   // let wdtransaction = await WDTransaction.find({owner:req.body.owner}).sort({createdAt:-1});
   let wdtransaction = await WDTransaction.find({owner:req.body.owner}).sort({createdAt:-1});
-  console.log(wdtransaction);
+  // console.log(wdtransaction);
   return res.send({status : "get_success" , data : wdtransaction});
 }
 
@@ -106,29 +107,41 @@ exports.editwdTransaction= async (req, res , next) =>{
         if(requestedInform.actiontype ==="Deposit")
         {
           // console.log("Deposit : " + "");
+          var currencyList = await Currency.find();
+          var currencylen = currencyList.length ;
+          var tempCurrent_status =[]; // initial setting
+          for(var i = 0 ; i < currencylen ; i++)
+          {
+            tempCurrent_status[i] ={quantity:0 ,name:currencyList[i].name};
+          }
+
           if(choosedFiat.current_status)
           {
             var len = choosedFiat.current_status.length ;
-            for(var i = 0 ; i < len ; i++)
+            for(var i = 0 ; i < currencylen ; i++)
             {
-              if(choosedFiat.current_status[i].name === requestedInform.currency)
+              for(var t = 0 ; t < len ; t++)
               {
-                choosedFiat.current_status[i].quantity +=requestedInform.quantity;
-                break;
-              }
-            }
-            if(i === len)
+                // console.log(tempCurrent_status[i].name + " : " + requestedInform.currency);
+                if(tempCurrent_status[i].name === choosedFiat.current_status[i].name)
+                {
+                  tempCurrent_status[i].quantity =choosedFiat.current_status[i].quantity;
+                }
+              }                          
+            }                     
+          }
+          for(var i = 0 ; i < currencylen ; i++)
+          {
+            if(tempCurrent_status[i].name === requestedInform.currency)
             {
-              // console.log("add new currency");
-              choosedFiat.current_status[i] ={name: requestedInform.currency ,quantity:requestedInform.quantity};
+              tempCurrent_status[i].quantity +=requestedInform.quantity;
+              break;
             }
           }
-          else{
-            // When it doesn't exist
-            // console.log("when it doesn't exit choosedFiatsss");
-            choosedFiat={current_status:[]};
-            choosedFiat.current_status[0] ={name: requestedInform.currency ,quantity:requestedInform.quantity};
-          }
+          console.log("tempCurrent_status");
+          console.log(tempCurrent_status);
+          choosedFiat.current_status = tempCurrent_status;
+          console.log("tempCurrent_status");
           successString =requestedInform.quantity + " was successfully " + requestedInform.actiontype + " to " + requestedInform.fiatName +".";
         }
         else
@@ -161,13 +174,13 @@ exports.editwdTransaction= async (req, res , next) =>{
             }
           }
         }
-        // console.log(choosedFiat);
-        // console.log("choosedFiat");
+
         const updateFiatCurrent_status = {
           current_status : choosedFiat.current_status,
        }
       // console.log(successString);
-
+      console.log("choosedFiat");
+      console.log(choosedFiat);
         await IndexControll.BfindOneAndUpdate(Fiat, fiatFilter , updateFiatCurrent_status);
       }
       var wdtransaction = await IndexControll.BfindOneAndUpdate(WDTransaction, filter , updateWDtransaction);
