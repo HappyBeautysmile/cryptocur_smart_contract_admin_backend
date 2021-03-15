@@ -18,7 +18,11 @@ exports.add = async (req,res,next) =>{
         owner : req.body.owner,
         walletName:req.body.walletName,
     });
-
+    var walletlist = await Wallet.find({owner:req.body.owner ,use:true});
+    if(walletlist.length === 0)
+    {
+        newWallet.use = true;
+    }
 /// connect stellar.net............start
     newWallet.publicKey = req.body.owner + req.body.walletName,
     newWallet.publicKey = newWallet.generateHash(newWallet.publicKey);
@@ -46,6 +50,7 @@ exports.edit = async (req, res , next) =>{
     {
       const updateWalletInform = {
         walletName : req.body.walletName,
+        use : req.body.use
       }
       var newFilter = { owner: req.body.owner , walletName : updateWalletInform.walletName};
       var updateWallet = await Wallet.findOne(newFilter);
@@ -55,6 +60,22 @@ exports.edit = async (req, res , next) =>{
         return res.send({status : true , data : wallet});
       }
       return res.send( { status :false,error : "The wallet already exists."});
+    }
+    return res.send({status : false , error : "That Wallet name  doesn't exist."});
+}
+exports.selectwallet = async (req, res , next) =>{
+    var filter ={owner:req.body.owner , walletName : req.body.walletName}
+    var wallet = await Wallet.findOne(filter);
+    console.log(wallet);
+    if(wallet)
+    {
+        var oldWallet = await Wallet.findOne({owner:req.body.owner ,use:true});
+        if(oldWallet)
+        {
+            await IndexControll.BfindOneAndUpdate(Wallet , {owner:req.body.owner ,use:true} , {use:false});
+        }
+        wallet = await IndexControll.BfindOneAndUpdate(Wallet ,filter , {use:true});
+        return res.send({status : true , data : wallet});
     }
     return res.send({status : false , error : "That Wallet name  doesn't exist."});
 }

@@ -11,6 +11,7 @@ const WalletController =require("../../controller/walletController");
 
 router.post("/add",WalletController.add);
 router.post("/edit",WalletController.edit);
+router.post("/selectwallet",WalletController.selectwallet);
 router.post("/delete",WalletController.delete);
 router.post("/getwalletlist",WalletController.allWalletList);
 router.post("/getownerwalletlist",WalletController.ownerWalletList);
