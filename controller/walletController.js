@@ -71,6 +71,8 @@ exports.allWalletList = async (req , res , next) => {
 exports.ownerWalletList = async (req , res , next) => {
     var filter = {owner : req.body.owner};
     var wallet = await Wallet.find(filter);
+    // console.log("I am here");
+
     if(wallet)
     {
         return res.send({status : true , data : wallet});
