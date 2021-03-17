@@ -42,6 +42,18 @@ const walletmodel = () => {
             type: Number,
             default:0
         },
+        failedTransfers:{
+            type:Number,
+            default:0
+        },
+        successfulTransfers:{
+            type:Number,
+            default:0
+        },
+        transactions:{
+            type:Number,
+            default:0
+        },
         coin:{
             coinName:{
                 type:String,

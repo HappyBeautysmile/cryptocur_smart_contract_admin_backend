@@ -15,6 +15,7 @@ router.post("/selectwallet",WalletController.selectwallet);
 router.post("/delete",WalletController.delete);
 router.post("/getwalletlist",WalletController.allWalletList);
 router.post("/getownerwalletlist",WalletController.ownerWalletList);
+router.post("/changestatusaction",WalletController.statusActionFunc);
 
 // router.post("/newfiat", authMiddleware.isLoggedIn,FiatControllers.newFiat);
 // router.post("/fiatlist", authMiddleware.isLoggedIn,FiatControllers.getFiatList);
