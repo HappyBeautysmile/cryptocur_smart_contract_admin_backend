@@ -62,7 +62,7 @@ exports.getUserFiatList = async (req,res,next) =>{
   // console.log( "--------------")
   var fiats = await Fiat.find({owner : req.body.email});
   var currencieslist = await Currency.find();
-  
+
   for(var i = 0 ; i < fiats.length ; i++)
   {
     if(fiats[i].current_status==null)
@@ -85,24 +85,28 @@ exports.getUserFiatList = async (req,res,next) =>{
       // console.log( fiats[i].current_status[t].name + " : " + fiats[i].current_status[t].quantity);
     }
   }
-  // console.log(fiats);
-  // [
-  //   {
-  //     createdAt: 2021-03-06T11:54:36.648Z,
-  //     _id: 60436e52164d7159d08c5cf5,
-  //     owner: 'admin@gmail.com',
-  //     name: 'Love',
-  //     __v: 0,
-  //     current_status: {
-            // {
-            //   USD: { exchange_rate: 1, quantity: 0 ,exchangeQuantity:0},
-            //   EUR: { exchange_rate: 1.2, quantity: 0 ,exchangeQuantity:0}
-            // }
-  //     }
-  //   },
-  // ]
-  // console.log(fiats[0].current_status) ;
-  return res.send({status : "get_success" , data : fiats});
+  /*
+  [{
+    exchange_rate: 1.2
+    name: "EUR"
+    quantity: 15000
+    totalQuantity: 15000
+  }]
+  */
+  selectedFiat = await Fiat.findOne({owner:req.body.email , use: true});
+  currencies = await Currency.find();
+  for(var i = 0 ; i < selectedFiat.current_status.length ; i++)
+  {
+    for(var t = 0 ; t <  currencies.length; t++)
+    {
+      if(selectedFiat.current_status[i].name === currencies[t].name)
+      {
+        selectedFiat.current_status[i].exchange_rate = currencies[t].exchange_rate ;
+        selectedFiat.current_status[i].totalQuantity = selectedFiat.current_status[i].quantity  ;
+      }
+    }
+  }
+  return res.send({status : "get_success" , data : fiats ,selectedFiat : selectedFiat});
 }
 
 exports.getFiat = async (req, res, next)=>{
@@ -157,13 +161,14 @@ exports.selectfiat = async (req, res , next) =>{
     // console.log(wallet);
     if(fiat)
     {
-        var oldFiat = await Fiat.findOne({owner:req.body.owner ,use:true});
-        if(oldFiat)
-        {
-            await IndexControll.BfindOneAndUpdate(Fiat , {owner:req.body.owner ,use:true} , {use:false});
-        }
-        fiat = await IndexControll.BfindOneAndUpdate(Fiat ,filter , {use:true});
-        return res.send({status : true , data : fiat});
+      var oldFiat = await Fiat.findOne({owner:req.body.owner ,use:true});
+      if(oldFiat)
+      {
+          await IndexControll.BfindOneAndUpdate(Fiat , {owner:req.body.owner ,use:true} , {use:false});
+      }
+      fiat = await IndexControll.BfindOneAndUpdate(Fiat ,filter , {use:true});
+    
+      return res.send({status : true , data : fiat});
     }
     return res.send({status : false , error : "That Wallet name  doesn't exist."});
 }

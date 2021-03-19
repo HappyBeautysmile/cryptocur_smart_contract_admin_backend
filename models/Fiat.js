@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 
 const currencyQuantity = () =>{
   var CurrencyQuantitySchema = new Schema({
-    currencyName:{
+    name:{
       type:String,
       require: true,
     },
