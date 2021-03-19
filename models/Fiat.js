@@ -32,6 +32,10 @@ const fiatmodel = () => {
     current_status: {
       type : Object,
     },
+    use:{
+      type:Boolean,
+      default:false
+    }
 });
 
   return mongoose.model("fiat", fiatSchema)

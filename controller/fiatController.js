@@ -149,4 +149,21 @@ exports.editFiat = async (req, res , next) =>{
       return res.send( { status :false,error : "The user doesn't exist"});
     }
       return res.send({status : false , error : "That fiat's name or that owner doesn't exist"});
-  }
+}
+
+exports.selectfiat = async (req, res , next) =>{
+    var filter ={owner:req.body.owner , name : req.body.name}
+    var fiat = await Fiat.findOne(filter);
+    // console.log(wallet);
+    if(fiat)
+    {
+        var oldFiat = await Fiat.findOne({owner:req.body.owner ,use:true});
+        if(oldFiat)
+        {
+            await IndexControll.BfindOneAndUpdate(Fiat , {owner:req.body.owner ,use:true} , {use:false});
+        }
+        fiat = await IndexControll.BfindOneAndUpdate(Fiat ,filter , {use:true});
+        return res.send({status : true , data : fiat});
+    }
+    return res.send({status : false , error : "That Wallet name  doesn't exist."});
+}

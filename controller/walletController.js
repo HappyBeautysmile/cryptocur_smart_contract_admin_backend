@@ -1,6 +1,5 @@
 const {Wallet} = require("../models/Wallet")
 const {Currency} = require("../models/Currency")
-const CurrencyControll = require("./currencyController")
 const IndexControll = require("./indexcontroller")
 
 
@@ -63,14 +62,7 @@ exports.edit = async (req, res , next) =>{
     {
       const updateWalletInform = {
         walletName : req.body.walletName,
-        use : req.body.use,
       }
-    //   console.log(req.body);
-      if(req.body.status)
-      {
-        updateWalletInform.use = req.body.use ;
-      }
-      var newFilter = { owner: req.body.owner , walletName : updateWalletInform.walletName};
       var updateWallet = await Wallet.findOne(newFilter);
       if(!updateWallet)
       {

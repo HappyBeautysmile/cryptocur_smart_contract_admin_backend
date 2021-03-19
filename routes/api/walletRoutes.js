@@ -9,13 +9,13 @@ const authMiddleware = require("../../config/middleware/authMiddleware");
 // route to login the user
 const WalletController =require("../../controller/walletController");
 
-router.post("/add",WalletController.add);
-router.post("/edit",WalletController.edit);
-router.post("/selectwallet",WalletController.selectwallet);
-router.post("/delete",WalletController.delete);
-router.post("/getwalletlist",WalletController.allWalletList);
-router.post("/getownerwalletlist",WalletController.ownerWalletList);
-router.post("/changestatusaction",WalletController.statusActionFunc);
+router.post("/add" , authMiddleware.isLoggedIn,WalletController.add);
+router.post("/edit" , authMiddleware.isLoggedIn,WalletController.edit);
+router.post("/selectwallet" , authMiddleware.isLoggedIn,WalletController.selectwallet);
+router.post("/delete" , authMiddleware.isLoggedIn ,WalletController.delete);
+router.post("/getwalletlist" , authMiddleware.isLoggedIn ,WalletController.allWalletList);
+router.post("/getownerwalletlist" , authMiddleware.isLoggedIn ,WalletController.ownerWalletList);
+router.post("/changestatusaction" , authMiddleware.isLoggedIn,WalletController.statusActionFunc);
 
 // router.post("/newfiat", authMiddleware.isLoggedIn,FiatControllers.newFiat);
 // router.post("/fiatlist", authMiddleware.isLoggedIn,FiatControllers.getFiatList);
