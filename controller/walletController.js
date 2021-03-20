@@ -35,6 +35,7 @@ exports.add = async (req,res,next) =>{
     {
         newWallet.use = true;
     }
+    newWallet.coinList = [{coinName:"ZTC" , coinFullName:"zedcoin",quantity :0}];
 /// connect stellar.net............start
     newWallet.publicKey = req.body.owner + req.body.walletName,
     newWallet.publicKey = newWallet.generateHash(newWallet.publicKey);
@@ -42,10 +43,11 @@ exports.add = async (req,res,next) =>{
     newWallet.keystore = newWallet.owner+newWallet.walletName + Date.now() ;
     newWallet.keystore = newWallet.generateHash(newWallet.keystore);
 
-    var save = await newWallet.save();
-
 /// connect stellar.net............end
-
+    console.log("newWallet");
+    console.log(newWallet);
+    console.log("newWallet");
+    var save = await newWallet.save();
     if(!save){
       return res.send( { status :false,error : "server error"});
     }else{

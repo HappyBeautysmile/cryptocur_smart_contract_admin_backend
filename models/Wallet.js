@@ -54,15 +54,8 @@ const walletmodel = () => {
             type:Number,
             default:0
         },
-        coin:{
-            coinName:{
-                type:String,
-                default:"zedcoin"
-            },
-            quantity:{
-                type:Number,
-                default:0
-            }
+        coinList:{
+            type : Object,
         },
     });
     walletSchema.methods.generateHash = function (params) {
