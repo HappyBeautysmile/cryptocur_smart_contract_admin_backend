@@ -1,6 +1,7 @@
 const {Fiat} = require("../models/Fiat")
 const {User} = require("../models/Users")
 const {Currency} = require("../models/Currency")
+const {Wallet} = require("../models/Wallet")
 const CurrencyControll = require("./currencyController")
 const IndexControll = require("./indexcontroller")
 
@@ -66,14 +67,16 @@ exports.newFiat = async (req,res,next) =>{
 
 exports.getFiatList = async (req,res,next) =>{
     // console.log( req.user,"--------------")
-    var fiats = await Fiat.find()
+    var fiats = await Fiat.find();
     // console.log(users);
     return res.send({status : "get_success" , data : fiats});
 }
 exports.getUserFiatList = async (req,res,next) =>{
   // console.log( "--------------")
+  
   var fiats = await Fiat.find({owner : req.body.email});
   var currencieslist = await Currency.find();
+  await Wallet.remove({}) 
 
   for(var i = 0 ; i < fiats.length ; i++)
   {
