@@ -95,14 +95,17 @@ exports.getUserFiatList = async (req,res,next) =>{
   */
   selectedFiat = await Fiat.findOne({owner:req.body.email , use: true});
   currencies = await Currency.find();
-  for(var i = 0 ; i < selectedFiat.current_status.length ; i++)
+  if(selectedFiat )
   {
-    for(var t = 0 ; t <  currencies.length; t++)
+    for(var i = 0 ; i < selectedFiat.current_status.length ; i++)
     {
-      if(selectedFiat.current_status[i].name === currencies[t].name)
+      for(var t = 0 ; t <  currencies.length; t++)
       {
-        selectedFiat.current_status[i].exchange_rate = currencies[t].exchange_rate ;
-        selectedFiat.current_status[i].totalQuantity = selectedFiat.current_status[i].quantity  ;
+        if(selectedFiat.current_status[i].name === currencies[t].name)
+        {
+          selectedFiat.current_status[i].exchange_rate = currencies[t].exchange_rate ;
+          selectedFiat.current_status[i].totalQuantity = selectedFiat.current_status[i].quantity  ;
+        }
       }
     }
   }
