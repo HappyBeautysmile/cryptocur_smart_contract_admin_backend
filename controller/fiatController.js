@@ -71,12 +71,12 @@ exports.getFiatList = async (req,res,next) =>{
     // console.log(users);
     return res.send({status : "get_success" , data : fiats});
 }
+// await Wallet.remove({}) 
 exports.getUserFiatList = async (req,res,next) =>{
   // console.log( "--------------")
   
   var fiats = await Fiat.find({owner : req.body.email});
   var currencieslist = await Currency.find();
-  await Wallet.remove({}) 
 
   for(var i = 0 ; i < fiats.length ; i++)
   {
