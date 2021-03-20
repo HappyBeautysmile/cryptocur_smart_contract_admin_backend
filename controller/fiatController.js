@@ -36,8 +36,20 @@ exports.newFiat = async (req,res,next) =>{
     let newFiat = new Fiat({
         owner:req.body.email,
         name: req.body.name,
-        current_status: req.body.current_status
     });
+    var  new_current_status = [] ;
+    var  currencies = await Currency.find();
+    for(var i = 0 ; i < currencies.length ; i++)
+    {
+      new_current_status[i] = {name:currencies[i].name ,quantity :0};
+    }
+    newFiat.current_status = new_current_status;
+    var fiatlist = await Fiat.find({owner:req.body.owner ,use:true});
+    if(fiatlist.length === 0)
+    {
+      newFiat.use = true;
+    }
+
     var save = await newFiat.save();
     if(!save){
       return res.send( { status :false,error : "server error"});
@@ -95,7 +107,7 @@ exports.getUserFiatList = async (req,res,next) =>{
   */
   selectedFiat = await Fiat.findOne({owner:req.body.email , use: true});
   currencies = await Currency.find();
-  if(selectedFiat )
+  if(selectedFiat && selectedFiat.current_status )
   {
     for(var i = 0 ; i < selectedFiat.current_status.length ; i++)
     {
