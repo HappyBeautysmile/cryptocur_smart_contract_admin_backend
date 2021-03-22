@@ -68,120 +68,29 @@ exports.deletebuysellTransaction =  async (req, res , next) =>{
 }
 
 
-exports.editwdTransaction= async (req, res , next) =>{
-    let requestedInform = {
-      _id :req.body._id,
-      fiatName : req.body.fiatName,
-      owner: req.body.owner,
-      actiontype: req.body.actiontype,
-      quantity: req.body.quantity,
-      process:req.body.process,
-      currency :req.body.currency
-    }
-    var filter = {_id :requestedInform._id};
-    var wdtransaction = await WDTransaction.findOne(filter);
-    var successString="success";
-    // console.log(wdtransaction);
-    if(wdtransaction)
-    {
-      const updateWDtransaction = {
-        process : requestedInform.process,
-      }
-      if(requestedInform.process === 2 ) // accept action
-      {
-        //   update fiat account .. withdraw and deoposit
-        // console.log("wdtransaction");
-        var fiatFilter = {name:requestedInform.fiatName ,owner:requestedInform.owner}
-        // console.log("requestedInform.fiatName : " +requestedInform.fiatName + "   owner : " +requestedInform.owner);
-        var choosedFiat = await Fiat.findOne(fiatFilter);
-        if(!choosedFiat) return res.send({status : false ,error : "That Fiat account doesn't exist"});
-        // console.log("Deposit : " +choosedFiat.actiontype);
-
-        if(requestedInform.actiontype ==="Deposit")
-        {
-          // console.log("Deposit : " + "");
-          var currencyList = await Currency.find();
-          var currencylen = currencyList.length ;
-          var tempCurrent_status =[]; // initial setting
-          for(var i = 0 ; i < currencylen ; i++)
-          {
-            tempCurrent_status[i] ={quantity:0 ,name:currencyList[i].name};
-          }
-
-          if(choosedFiat.current_status)
-          {
-            var len = choosedFiat.current_status.length ;
-            for(var i = 0 ; i < currencylen ; i++)
-            {
-              for(var t = 0 ; t < len ; t++)
-              {
-                // console.log(tempCurrent_status[i].name + " : " + requestedInform.currency);
-                if(tempCurrent_status[i].name === choosedFiat.current_status[i].name)
-                {
-                  tempCurrent_status[i].quantity =choosedFiat.current_status[i].quantity;
-                }
-              }                          
-            }                     
-          }
-          for(var i = 0 ; i < currencylen ; i++)
-          {
-            if(tempCurrent_status[i].name === requestedInform.currency)
-            {
-              tempCurrent_status[i].quantity +=requestedInform.quantity;
-              break;
-            }
-          }
-          console.log("tempCurrent_status");
-          console.log(tempCurrent_status);
-          choosedFiat.current_status = tempCurrent_status;
-          console.log("tempCurrent_status");
-          successString =requestedInform.quantity + " was successfully " + requestedInform.actiontype + " to " + requestedInform.fiatName +".";
-        }
-        else
-        {
-          if(!choosedFiat.current_status)
-          {
-            return res.send({status : false ,error : "Money doesn't exist"});
-          }
-          else
-          {
-            var len = choosedFiat.current_status.length
-            for(var i = 0 ; i < len ; i++)
-            {
-              if(choosedFiat.current_status[i].name === requestedInform.currency)
-              {
-                if(choosedFiat.current_status[i].quantity < requestedInform.quantity)
-                {
-                  return res.send({status : false ,error : "Insufficient transfer amount."});
-                }
-                else{
-                  choosedFiat.current_status[i].quantity -=requestedInform.quantity;
-                  successString =requestedInform.quantity + " was successfully " + requestedInform.actiontype + " From " + requestedInform.fiatName +".";
-                  break;
-                }
-              }
-            }
-            if(i === len)
-            {
-              return res.send({status : false ,error : requestedInform.currency + " doesn't exist."});
-            }
-          }
-        }
-
-        const updateFiatCurrent_status = {
-          current_status : choosedFiat.current_status,
-       }
-      // console.log(successString);
-      console.log("choosedFiat");
-      console.log(choosedFiat);
-        await IndexControll.BfindOneAndUpdate(Fiat, fiatFilter , updateFiatCurrent_status);
-      }
-      var wdtransaction = await IndexControll.BfindOneAndUpdate(WDTransaction, filter , updateWDtransaction);
-      return res.send({status : true,data : wdtransaction , success:successString});
-    }
-    else{
-      return res.send({status : false ,error : "That Withdraw/deopsit Transaction doesn't exist"});
-    }
+exports.editbuysellTransaction= async (req, res , next) =>{
+    // {
+    //     "owner":"test@gmail.com",
+    //     "fiatInformation" :{
+    //         "fiatName" : "hot",
+    //         "selectedCurrency" : {
+    //             "name" :"USD",
+    //             "exchange_rate" :"1",
+    //             "quantity" :40.5
+    //         }
+    //     },
+    //     "walletInformation" :{
+    //         "walletName" : "Bee",
+    //         "selectedCoin" :{
+    //             "coinName" : "ZDC",
+    //             "coinFullName" :"zedcoin",
+    //             "quantity" :"0.32425"
+    //         }
+    //     },
+    //     "actiontype" : "Buy" 
+    // }
+    let requestedInform = req.body;
+    return res.send({status : true , data : requestedInform}) ;
   }
 //   exports.getCurency = async (req, res , next) =>{
 //     var currency = await Currency.findOne({name : req.body.name});

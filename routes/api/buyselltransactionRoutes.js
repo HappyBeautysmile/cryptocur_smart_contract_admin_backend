@@ -14,7 +14,7 @@ router.post("/onwerbuyselltransactions", buyselltransactionController.getOwnerbu
 router.post("/allbuysellrequesttransactions", buyselltransactionController.getAllbuySellRequestTransactions);
 
 router.post("/delete" , buyselltransactionController.deletebuysellTransaction);
-// router.post("/edit",authMiddleware.isLoggedIn, WDTransactionController.editwdTransaction);
+router.post("/edit" , buyselltransactionController.editbuysellTransaction);
 
  
 
