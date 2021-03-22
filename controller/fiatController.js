@@ -5,7 +5,7 @@ const {Wallet} = require("../models/Wallet")
 const CurrencyControll = require("./currencyController")
 const IndexControll = require("./indexcontroller")
 
-
+// add fiat in admin panel
 exports.add = async (req,res,next) =>{
     var fiat = await Fiat.findOne({name : req.body.name ,owner: req.headers.email});
     if(fiat){
@@ -45,12 +45,15 @@ exports.newFiat = async (req,res,next) =>{
       new_current_status[i] = {name:currencies[i].name ,quantity :0};
     }
     newFiat.current_status = new_current_status;
-    var fiatlist = await Fiat.find({owner:req.body.owner ,use:true});
-    if(fiatlist.length === 0)
+    var fiat= await Fiat.findOne({owner:req.body.email ,use:true});
+    console.log("fiatlist")
+    console.log(fiat)
+    console.log("fiatlist")
+    if(!fiat)
     {
       newFiat.use = true;
     }
-
+    console.log(newFiat) ;
     var save = await newFiat.save();
     if(!save){
       return res.send( { status :false,error : "server error"});
