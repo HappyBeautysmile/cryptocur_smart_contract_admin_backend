@@ -1,11 +1,13 @@
 const {BuySellTransaction} = require("../models/BuySellTransaction")
 const {Fiat} = require("../models/Fiat")
 const {Wallet} = require("../models/Wallet")
+const {Coin} = require("../models/Coin")
 const {WDTransaction} = require("../models/WDTransaction")
 const {Currency} = require("../models/Currency");
 const IndexControll = require("./indexcontroller");
 const { Accepted, Pendding, Rejected } = require("../config/GlobalVariable/TransactionRole");
-
+const  BuySellRole = require("../config/GlobalVariable/BuySellRole");
+const { COINURL } = require("../db");
 
 exports.add = async (req,res,next) =>{
 
@@ -15,6 +17,8 @@ exports.add = async (req,res,next) =>{
     var selectedFiat = await Fiat.findOne({owner :buyselltransaction.owner , use : true });
     buyselltransaction.fiatInformation.fiatName =selectedFiat.name
     buyselltransaction.walletInformation.walletName =selectedWallet.walletName
+
+
     // console.log(selectedWallet);
     // console.log(selectedFiat);
     // console.log(buyselltransaction);
@@ -23,9 +27,14 @@ exports.add = async (req,res,next) =>{
     if(!save){
       return res.send( { status :false,error : "server error"});
     }else{
-         console.log("A new WDTransaction was added!");
-         let buyselltransaction = await BuySellTransaction.find();
-         return res.send({status : true, data : buyselltransaction});
+        console.log("A new WDTransaction was added!");
+        let buyselltransaction = await BuySellTransaction.find();
+        selectedWallet.transactions++;
+        console.log("selectedWallet");
+        console.log(selectedWallet);
+        console.log("selectedWallet");
+        await IndexControll.BfindOneAndUpdate(Wallet , {_id : selectedWallet._id }, selectedWallet);
+        return res.send({status : true, data : buyselltransaction});
     }
 }
 
@@ -90,8 +99,105 @@ exports.editbuysellTransaction= async (req, res , next) =>{
     //     "actiontype" : "Buy" 
     // }
     let requestedInform = req.body;
-    return res.send({status : true , data : requestedInform}) ;
-  }
+    let selectedFiat = await Fiat.findOne({owner:requestedInform.owner , name : requestedInform.fiatInformation.fiatName});
+    let selectedCurrency = await Currency.findOne({ name : requestedInform.fiatInformation.selectedCurrency.name });
+
+    let selectedWallet = await Wallet.findOne({owner:requestedInform.owner , name : requestedInform.walletInformation.name});
+    let selectedCoin = await Coin.findOne({coinName : requestedInform.walletInformation.selectedCoin.coinName ,coinFullName : requestedInform.walletInformation.selectedCoin.coinFullName}) ;
+    let selectedBuySellTransaction = await BuySellTransaction.findOne({_id : req.body._id});
+    if(selectedWallet.successfulTransfers === null)
+    { 
+      selectedWallet.successfulTransfers  = 0;
+    }
+    if(selectedWallet.failedTransfers === null)
+    { 
+      selectedWallet.failedTransfers  = 0;
+    }
+    // console.log("selectedBuySellTransaction");
+    // console.log(requestedInform);
+    // console.log(selectedFiat);
+    // console.log("selectedBuySellTransaction");
+    if(requestedInform.actiontype === BuySellRole.Buy && selectedFiat)
+    {
+      if(selectedFiat.current_status )
+      {
+        var currencyListLen = selectedFiat.current_status.length;
+        var successFlag = false ;
+
+        // find currency
+        for(var i = 0 ; i < currencyListLen ; i++)
+        {
+          // console.log(selectedFiat.current_status[i].name + " : " + selectedFiat.current_status[i].quantity);
+          // console.log(requestedInform.fiatInformation.selectedCurrency.name + " : " +  requestedInform.fiatInformation.selectedCurrency.quantity );
+          if(selectedFiat.current_status[i].name === requestedInform.fiatInformation.selectedCurrency.name && selectedFiat.current_status[i].quantity >= requestedInform.fiatInformation.selectedCurrency.quantity  )
+          {
+            successFlag = true ;  
+            selectedFiat.current_status[i].quantity -= requestedInform.fiatInformation.selectedCurrency.quantity ;
+          }
+        }
+        if(successFlag === false) 
+        {
+          // console.log("Here is vitaliy : " + i);
+          selectedWallet.failedTransfers++;
+          await IndexControll.BfindOneAndUpdate(Wallet , {owner:requestedInform.owner , walletName : requestedInform.walletInformation.walletName} , selectedWallet);
+          await IndexControll.BfindOneAndUpdate(BuySellTransaction, {_id : req.body._id} , {process : 1});
+          return res.send({status : false , error : "Your amount of that fiat is not enough"});
+        }
+        // console.log("test");
+        // add  coin
+        if(selectedWallet)
+        {
+          var coinListLen =selectedWallet.coinList ? selectedWallet.coinList.length :0 ;
+          // console.log("coinListLen");
+          // console.log(selectedWallet);
+          // console.log("coinListLen");
+
+          for( var t = 0 ; t < coinListLen ; t++)
+          {
+            if( selectedWallet.coinList[t].coinName === requestedInform.walletInformation.selectedCoin.coinName)
+            {
+              selectedWallet.coinList[t].quantity += requestedInform.walletInformation.selectedCoin.quantity ;
+              break ;
+            }
+          }
+          if( t === coinListLen)
+          {
+            selectedWallet.coinList[t] ={
+              coinName : requestedInform.walletInformation.selectedCoin.coinName,
+              coinFullName : requestedInform.walletInformation.selectedCoin.coinFullName,
+              quantity :requestedInform.walletInformation.selectedCoin.quantity
+            }
+          }
+        }
+       
+        selectedWallet.successfulTransfers++;
+        await IndexControll.BfindOneAndUpdate(Fiat , {owner:requestedInform.owner , name : requestedInform.fiatInformation.fiatName} , selectedFiat);
+        await IndexControll.BfindOneAndUpdate(BuySellTransaction, {_id : req.body._id} , {process : 2});
+        await IndexControll.BfindOneAndUpdate(Wallet , {owner:requestedInform.owner , walletName : requestedInform.walletInformation.walletName} , selectedWallet);
+      }
+      else{
+        selectedWallet.failedTransfers++;
+        await IndexControll.BfindOneAndUpdate(BuySellTransaction, {_id : req.body._id} , {process : 1});
+        await IndexControll.BfindOneAndUpdate(Wallet , {owner:requestedInform.owner , walletName : requestedInform.walletInformation.walletName} , selectedWallet);
+        return res.send({status : false , error : "Please check your Fiat and "})
+      }
+      // console.log("ssssssss Buy");
+      // console.log(selectedFiat) ;
+      // console.log(selectedCurrency);
+      // console.log(selectedCoin);
+      // console.log(selectedWallet) ;
+      // console.log(selectedBuySellTransaction) ;
+      return res.send({status : true , data : requestedInform}) ; 
+    }
+    else if(requestedInform.actiontype === BuySellRole.Sell && selectedWallet )    //BuySellRole.Sell
+    {           
+
+    }
+    selectedWallet.failedTransfers++;
+    await IndexControll.BfindOneAndUpdate(BuySellTransaction, {_id : req.body._id} , {process : 1});
+    await IndexControll.BfindOneAndUpdate(Wallet , {owner:requestedInform.owner , walletName : requestedInform.walletInformation.walletName} , selectedWallet);
+    return res.send({status : false , error : "Please check your Wallet and Fiat account. They are not allowed it."})
+}
 //   exports.getCurency = async (req, res , next) =>{
 //     var currency = await Currency.findOne({name : req.body.name});
 //     if(currency)
