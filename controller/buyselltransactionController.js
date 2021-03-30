@@ -30,9 +30,6 @@ exports.add = async (req,res,next) =>{
         console.log("A new WDTransaction was added!");
         let buyselltransaction = await BuySellTransaction.find();
         selectedWallet.transactions++;
-        console.log("selectedWallet");
-        console.log(selectedWallet);
-        console.log("selectedWallet");
         await IndexControll.BfindOneAndUpdate(Wallet , {_id : selectedWallet._id }, selectedWallet);
         return res.send({status : true, data : buyselltransaction});
     }
@@ -113,10 +110,6 @@ exports.editbuysellTransaction= async (req, res , next) =>{
     { 
       selectedWallet.failedTransfers  = 0;
     }
-    // console.log("selectedBuySellTransaction");
-    // console.log(requestedInform);
-    // console.log(selectedFiat);
-    // console.log("selectedBuySellTransaction");
     if(requestedInform.actiontype === BuySellRole.Buy && selectedFiat)
     {
       if(selectedFiat.current_status )
@@ -127,8 +120,6 @@ exports.editbuysellTransaction= async (req, res , next) =>{
         // find currency
         for(var i = 0 ; i < currencyListLen ; i++)
         {
-          // console.log(selectedFiat.current_status[i].name + " : " + selectedFiat.current_status[i].quantity);
-          // console.log(requestedInform.fiatInformation.selectedCurrency.name + " : " +  requestedInform.fiatInformation.selectedCurrency.quantity );
           if(selectedFiat.current_status[i].name === requestedInform.fiatInformation.selectedCurrency.name && selectedFiat.current_status[i].quantity >= requestedInform.fiatInformation.selectedCurrency.quantity  )
           {
             successFlag = true ;  
@@ -137,21 +128,14 @@ exports.editbuysellTransaction= async (req, res , next) =>{
         }
         if(successFlag === false) 
         {
-          // console.log("Here is vitaliy : " + i);
           selectedWallet.failedTransfers++;
           await IndexControll.BfindOneAndUpdate(Wallet , {owner:requestedInform.owner , walletName : requestedInform.walletInformation.walletName} , selectedWallet);
           await IndexControll.BfindOneAndUpdate(BuySellTransaction, {_id : req.body._id} , {process : 1});
           return res.send({status : false , error : "Your amount of that fiat is not enough"});
         }
-        // console.log("test");
-        // add  coin
         if(selectedWallet)
         {
           var coinListLen =selectedWallet.coinList ? selectedWallet.coinList.length :0 ;
-          // console.log("coinListLen");
-          // console.log(selectedWallet);
-          // console.log("coinListLen");
-
           for( var t = 0 ; t < coinListLen ; t++)
           {
             if( selectedWallet.coinList[t].coinName === requestedInform.walletInformation.selectedCoin.coinName)
@@ -181,12 +165,6 @@ exports.editbuysellTransaction= async (req, res , next) =>{
         await IndexControll.BfindOneAndUpdate(Wallet , {owner:requestedInform.owner , walletName : requestedInform.walletInformation.walletName} , selectedWallet);
         return res.send({status : false , error : "Please check your Fiat and "})
       }
-      // console.log("ssssssss Buy");
-      // console.log(selectedFiat) ;
-      // console.log(selectedCurrency);
-      // console.log(selectedCoin);
-      // console.log(selectedWallet) ;
-      // console.log(selectedBuySellTransaction) ;
       return res.send({status : true , data : requestedInform}) ; 
     }
     else if(requestedInform.actiontype === BuySellRole.Sell && selectedWallet )    //BuySellRole.Sell
