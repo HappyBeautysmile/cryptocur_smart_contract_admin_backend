@@ -101,6 +101,7 @@ exports.getUserFiatList = async (req,res,next) =>{
         // fiats[i].current_status[currencieslist[t].name].exchangeQuantity =  0;
       }
       // console.log( fiats[i].current_status[t].name + " : " + fiats[i].current_status[t].quantity);
+      // console.log(Are ?);
     }
   }
   /*
@@ -179,7 +180,7 @@ exports.editFiat = async (req, res , next) =>{
 exports.selectfiat = async (req, res , next) =>{
     var filter ={owner:req.body.owner , name : req.body.name}
     var fiat = await Fiat.findOne(filter);
-    // console.log(wallet);
+    // console.lo("")
     if(fiat)
     {
       var oldFiat = await Fiat.findOne({owner:req.body.owner ,use:true});
