@@ -74,6 +74,15 @@ exports.deletebuysellTransaction =  async (req, res , next) =>{
 }
 
 
+exports.rejectbuysellTransaction= async (req, res , next) =>{
+  let requestedInform = req.body;
+  let selectedWallet = await Wallet.findOne({owner:requestedInform.owner , walletName : requestedInform.walletInformation.walletName});
+  selectedWallet.failedTransfers++;
+  await IndexControll.BfindOneAndUpdate(BuySellTransaction, {_id : req.body._id} , {process : 1});
+  await IndexControll.BfindOneAndUpdate(Wallet ,{_id : selectedWallet._id}, selectedWallet);
+  return res.send({status : true , data : "The action is rejected."})
+}
+
 exports.editbuysellTransaction= async (req, res , next) =>{
     // {
     //     "owner":"test@gmail.com",

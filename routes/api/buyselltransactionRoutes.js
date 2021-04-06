@@ -15,6 +15,7 @@ router.post("/allbuysellrequesttransactions", buyselltransactionController.getAl
 
 router.post("/delete" , buyselltransactionController.deletebuysellTransaction);
 router.post("/edit" , buyselltransactionController.editbuysellTransaction);
+router.post("/reject" , buyselltransactionController.rejectbuysellTransaction);
 
  
 
