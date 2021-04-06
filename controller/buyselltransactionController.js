@@ -95,13 +95,15 @@ exports.editbuysellTransaction= async (req, res , next) =>{
     //     },
     //     "actiontype" : "Buy" 
     // }
+
     let requestedInform = req.body;
     let selectedFiat = await Fiat.findOne({owner:requestedInform.owner , name : requestedInform.fiatInformation.fiatName});
-    let selectedCurrency = await Currency.findOne({ name : requestedInform.fiatInformation.selectedCurrency.name });
+    // let selectedCurrency = await Currency.findOne({ name : requestedInform.fiatInformation.selectedCurrency.name });
 
-    let selectedWallet = await Wallet.findOne({owner:requestedInform.owner , name : requestedInform.walletInformation.name});
-    let selectedCoin = await Coin.findOne({coinName : requestedInform.walletInformation.selectedCoin.coinName ,coinFullName : requestedInform.walletInformation.selectedCoin.coinFullName}) ;
-    let selectedBuySellTransaction = await BuySellTransaction.findOne({_id : req.body._id});
+    let selectedWallet = await Wallet.findOne({owner:requestedInform.owner , walletName : requestedInform.walletInformation.walletName});
+
+    // let selectedCoin = await Coin.findOne({coinName : requestedInform.walletInformation.selectedCoin.coinName ,coinFullName : requestedInform.walletInformation.selectedCoin.coinFullName}) ;
+    // let selectedBuySellTransaction = await BuySellTransaction.findOne({_id : req.body._id});
     if(selectedWallet.successfulTransfers === null)
     { 
       selectedWallet.successfulTransfers  = 0;
@@ -120,7 +122,8 @@ exports.editbuysellTransaction= async (req, res , next) =>{
         // find currency
         for(var i = 0 ; i < currencyListLen ; i++)
         {
-          if(selectedFiat.current_status[i].name === requestedInform.fiatInformation.selectedCurrency.name && selectedFiat.current_status[i].quantity >= requestedInform.fiatInformation.selectedCurrency.quantity  )
+          // console.log(selectedFiat.current_status[i].name + " : " + selectedFiat.current_status[i].quantity);
+          if(selectedFiat.current_status[i].name === requestedInform.fiatInformation.selectedCurrency.name && selectedFiat.current_status[i].quantity >= requestedInform.fiatInformation.selectedCurrency.quantity)
           {
             successFlag = true ;  
             selectedFiat.current_status[i].quantity -= requestedInform.fiatInformation.selectedCurrency.quantity ;
@@ -153,16 +156,16 @@ exports.editbuysellTransaction= async (req, res , next) =>{
             }
           }
         }
-       
         selectedWallet.successfulTransfers++;
-        await IndexControll.BfindOneAndUpdate(Fiat , {owner:requestedInform.owner , name : requestedInform.fiatInformation.fiatName} , selectedFiat);
+        await IndexControll.BfindOneAndUpdate(Fiat , {_id : selectedFiat._id} , selectedFiat);
         await IndexControll.BfindOneAndUpdate(BuySellTransaction, {_id : req.body._id} , {process : 2});
-        await IndexControll.BfindOneAndUpdate(Wallet , {owner:requestedInform.owner , walletName : requestedInform.walletInformation.walletName} , selectedWallet);
+        await IndexControll.BfindOneAndUpdate(Wallet , {_id : selectedWallet._id} , selectedWallet);
+
       }
       else{
         selectedWallet.failedTransfers++;
         await IndexControll.BfindOneAndUpdate(BuySellTransaction, {_id : req.body._id} , {process : 1});
-        await IndexControll.BfindOneAndUpdate(Wallet , {owner:requestedInform.owner , walletName : requestedInform.walletInformation.walletName} , selectedWallet);
+        await IndexControll.BfindOneAndUpdate(Wallet ,{_id : selectedWallet._id}, selectedWallet);
         return res.send({status : false , error : "Please check your Fiat and "})
       }
       return res.send({status : true , data : requestedInform}) ; 
@@ -173,7 +176,7 @@ exports.editbuysellTransaction= async (req, res , next) =>{
     }
     selectedWallet.failedTransfers++;
     await IndexControll.BfindOneAndUpdate(BuySellTransaction, {_id : req.body._id} , {process : 1});
-    await IndexControll.BfindOneAndUpdate(Wallet , {owner:requestedInform.owner , walletName : requestedInform.walletInformation.walletName} , selectedWallet);
+    await IndexControll.BfindOneAndUpdate(Wallet ,{_id : selectedWallet._id}, selectedWallet);
     return res.send({status : false , error : "Please check your Wallet and Fiat account. They are not allowed it."})
 }
 //   exports.getCurency = async (req, res , next) =>{
