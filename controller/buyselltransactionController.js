@@ -131,6 +131,7 @@ exports.editbuysellTransaction= async (req, res , next) =>{
         // find currency
         for(var i = 0 ; i < currencyListLen ; i++)
         {
+
           // console.log(selectedFiat.current_status[i].name + " : " + selectedFiat.current_status[i].quantity);
           if(selectedFiat.current_status[i].name === requestedInform.fiatInformation.selectedCurrency.name && selectedFiat.current_status[i].quantity >= requestedInform.fiatInformation.selectedCurrency.quantity)
           {
@@ -231,7 +232,7 @@ exports.editbuysellTransaction= async (req, res , next) =>{
         await IndexControll.BfindOneAndUpdate(Wallet ,{_id : selectedWallet._id}, selectedWallet);
         return res.send({status : false , error : "Please check your Fiat and "})
       }
-      return res.send({status : true , data : requestedInform}) ; 
+      return res.send({status : true , data : requestedInform}) ;  
     }
 }
 //   exports.getCurency = async (req, res , next) =>{

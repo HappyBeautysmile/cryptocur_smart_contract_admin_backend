@@ -11,6 +11,8 @@ const settingController =require("../../controller/settingController");
 
 router.post("/edit", authMiddleware.isLoggedIn,settingController.bankAccountChange);
 router.post("/get", authMiddleware.isLoggedIn,settingController.getBankAccount);
+router.post("/getsiteinformation",settingController.getsiteInformation);
+
 // router.post("/newfiat", authMiddleware.isLoggedIn,FiatControllers.newFiat);
 // router.post("/edit", authMiddleware.isLoggedIn, FiatControllers.editFiat);
 module.exports = router;

@@ -76,7 +76,6 @@ exports.getCoin = async (req, res , next) =>{
 //   return res.send({status : true, data : auth});
 // }
 
-
 // exports.adminsignin  = async (req,res,next) =>{
 //   // console.log(req.body)
 //   var user = await User.findOne({email : req.body.email});

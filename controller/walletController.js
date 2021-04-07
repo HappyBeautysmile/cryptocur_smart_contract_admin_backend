@@ -14,7 +14,6 @@ exports.changeCurrentUse = async (wallet) =>{
             await IndexControll.BfindOneAndUpdate(Wallet, {owner:enableWallet[0].owner , walletName : enableWallet[0].walletName},{use:true}) ;
         }
     }
-
 }
 exports.add = async (req,res,next) =>{
     var filter ={owner:req.body.owner , walletName:req.body.walletName}

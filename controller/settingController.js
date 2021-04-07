@@ -3,6 +3,7 @@ const config = require('../db');
 const fs = require('fs')
 const {User} = require("../models/Users")
 const {BankAccount} = require("../models/BankAccount")
+const {SiteInformation} = require("../models/SiteInformation")
 
 exports.bankAccountChange = async (req, res, next) => {
     var bankAccount = await BankAccount.findOne();
@@ -31,4 +32,17 @@ exports.getBankAccount = async (req,res,next) =>{
         return res.send({status: false , error:"Bank account doesn't exsit"})
     }
     return res.send({status : "get_success" , data : bankAccount});
+}
+// stellar asset keys(public key , secret key)
+exports.getsiteInformation = async (req , res , next) => {
+    var siteInformation = await SiteInformation.findOne();
+    if(siteInformation)
+    {
+        return res.send({status : true , data : siteInformation});
+    }
+    else{
+        var newSiteInformation = new SiteInformation({});
+        var save = await newSiteInformation.save();
+        return res.send({status : true , data : save});
+    }
 }
