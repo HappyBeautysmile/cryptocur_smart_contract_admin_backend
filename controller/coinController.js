@@ -29,7 +29,7 @@ exports.Delete =  async (req, res , next) =>{
   {
     var coin_status = await Coin.deleteOne(filter);
     return res.send({status : true,data : coin_status});
-  }
+  } 
   return res.send({status : false ,error : "That Coin doesn't exist"});
 }
 

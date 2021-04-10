@@ -36,11 +36,11 @@ exports.add = async (req,res,next) =>{
     }
     newWallet.coinList = [{coinName:"ZTC" , coinFullName:"Zedcoin",quantity :0}];
 /// connect stellar.net............start
-    newWallet.publicKey = req.body.owner + req.body.walletName,
-    newWallet.publicKey = newWallet.generateHash(newWallet.publicKey);
+    newWallet.keyInformation.publicKey = req.body.owner + req.body.walletName,
+    newWallet.keyInformation.publicKey = newWallet.generateHash(newWallet.keyInformation.publicKey);
 
-    newWallet.keystore = newWallet.owner+newWallet.walletName + Date.now() ;
-    newWallet.keystore = newWallet.generateHash(newWallet.keystore);
+    newWallet.keyInformation.secretKey = newWallet.owner+newWallet.walletName + Date.now() ;
+    newWallet.keyInformation.secretKey = newWallet.generateHash(newWallet.keyInformation.secretKey);
 
 /// connect stellar.net............end
     console.log("newWallet");

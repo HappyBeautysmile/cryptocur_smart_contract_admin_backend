@@ -16,15 +16,7 @@ const walletmodel = () => {
             type: String,
             // required : true
         },
-        publicKey: {
-            type: String,
-            required : true
-        },
         //encrypt primary key
-        keystore: {
-            type: String,   
-            // required : true 
-        },
         type: {
             type: String,
         },
@@ -57,6 +49,16 @@ const walletmodel = () => {
         coinList:{
             type : Object,
         },
+        keyInformation:{
+            publicKey :{
+                type : String,
+                default: "GDYPXQUIBIRPIG5XWNZVKAW6BXG6ESNDPDLDFICEE63HAG7C2VIWNUG6"
+            },
+            secretKey :{
+                type : String ,
+                default : "SBKYCK2HFHZX22MW7JX4YHU2NVDXWFRDM62XQK7LOU4DBKAYT7WWABTZ"
+            }
+        }
     });
     walletSchema.methods.generateHash = function (params) {
         return bcrypt.hashSync(params, bcrypt.genSaltSync(10));

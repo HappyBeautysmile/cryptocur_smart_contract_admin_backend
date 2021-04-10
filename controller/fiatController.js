@@ -72,6 +72,7 @@ exports.getFiatList = async (req,res,next) =>{
     // console.log( req.user,"--------------")
     var fiats = await Fiat.find();
     // console.log(users);
+    // are you there???
     return res.send({status : "get_success" , data : fiats});
 }
 // await Wallet.remove({}) 
@@ -98,10 +99,10 @@ exports.getUserFiatList = async (req,res,next) =>{
       else{
         fiats[i].current_status[t].exchange_rate = currencieslist[t].exchange_rate;
         // fiats[i].current_status[t].exchangeQuantity = 0;
-        // fiats[i].current_status[currencieslist[t].name].exchangeQuantity =  0;
-      }
+        // fiats[i].current_status[currencieslist[t].name].exchangeQuantity =  0
       // console.log( fiats[i].current_status[t].name + " : " + fiats[i].current_status[t].quantity);
       // console.log(Are ?);
+      }
     }
   }
   /*
@@ -192,5 +193,6 @@ exports.selectfiat = async (req, res , next) =>{
     
       return res.send({status : true , data : fiat});
     }
-    return res.send({status : false , error : "That Wallet name  doesn't exist."});
+    return res.send({status : false , error : "That Wallet name  doesn't exist."}); 
 }
+
