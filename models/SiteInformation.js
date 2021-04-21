@@ -3,6 +3,12 @@ const Schema = mongoose.Schema;
 
 const siteinformationmodel = () => {
   var  siteInformationSchema = new Schema({
+    bankAddress: {
+        type: String,
+        unique: true,
+        required : true,
+        deault:"testBank"
+    },
     asset_account:{
         public_key:{
             type:String,
@@ -22,6 +28,12 @@ const siteinformationmodel = () => {
             type:String,
             default:"SC5AOCHK24WUIHAN4Q3GRFBAL6E2VJ442HDWZGPQA4MBULXCSM3YRGEE"
         },
+    },
+    feePercent:{
+        type:Number,
+        unique: true,
+        require: true,
+        default:2
     }
 });
 

@@ -8,10 +8,11 @@ const authMiddleware = require("../../config/middleware/authMiddleware");
 // /api/users/login
 // route to login the user
 const settingController =require("../../controller/settingController");
-
+// authMiddleware.isLoggedIn,
 router.post("/edit", authMiddleware.isLoggedIn,settingController.bankAccountChange);
-router.post("/get", authMiddleware.isLoggedIn,settingController.getBankAccount);
+router.post("/get", settingController.getBankAccount);
 router.post("/getsiteinformation",settingController.getsiteInformation);
+router.post("/editFeePercent",settingController.editFeePercent);
 
 // router.post("/newfiat", authMiddleware.isLoggedIn,FiatControllers.newFiat);
 // router.post("/edit", authMiddleware.isLoggedIn, FiatControllers.editFiat);

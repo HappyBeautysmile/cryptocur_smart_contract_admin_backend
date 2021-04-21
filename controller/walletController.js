@@ -42,6 +42,19 @@ exports.add = async (req,res,next) =>{
     newWallet.keyInformation.secretKey = newWallet.owner+newWallet.walletName + Date.now() ;
     newWallet.keyInformation.secretKey = newWallet.generateHash(newWallet.keyInformation.secretKey);
 
+
+    try {
+        const response = await fetch(
+          `https://friendbot.stellar.org?addr=${encodeURIComponent(
+            pair.publicKey(),
+          )}`,
+        );
+        const responseJSON = await response.json();
+        console.log("SUCCESS! You have a new account :)\n", responseJSON);
+      } catch (e) {
+        console.error("ERROR!", e);
+      }
+      
 /// connect stellar.net............end
     console.log("newWallet");
     console.log(newWallet);
