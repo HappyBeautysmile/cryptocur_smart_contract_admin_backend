@@ -2,7 +2,6 @@ const IndexControll = require("./indexcontroller")
 const config = require('../db');
 const fs = require('fs')
 const {User} = require("../models/Users")
-const {BankAccount} = require("../models/BankAccount")
 const {SiteInformation} = require("../models/SiteInformation")
 
 exports.bankAccountChange = async (req, res, next) => {
