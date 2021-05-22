@@ -1,7 +1,12 @@
 const {Wallet} = require("../models/Wallet")
 const {Currency} = require("../models/Currency")
 const IndexControll = require("./indexcontroller")
-
+//require stellar start
+var StellarSdk = require('stellar-sdk');
+const fetch = require("node-fetch");
+const stellarServer = new StellarSdk.Server("https://horizon-testnet.stellar.org");
+//require stellar end
+ 
 
 exports.changeCurrentUse = async (wallet) =>{
     if(wallet.use === true)
@@ -34,19 +39,22 @@ exports.add = async (req,res,next) =>{
     {
         newWallet.use = true;
     }
-    newWallet.coinList = [{coinName:"ZTC" , coinFullName:"Zedcoin",quantity :0}];
 /// connect stellar.net............start
-    newWallet.keyInformation.publicKey = req.body.owner + req.body.walletName,
-    newWallet.keyInformation.publicKey = newWallet.generateHash(newWallet.keyInformation.publicKey);
+    /*create key part start*/
 
-    newWallet.keyInformation.secretKey = newWallet.owner+newWallet.walletName + Date.now() ;
-    newWallet.keyInformation.secretKey = newWallet.generateHash(newWallet.keyInformation.secretKey);
+    pair = StellarSdk.Keypair.random();
+    newWallet.keyInformation.secretKey = pair.secret();
+    newWallet.keyInformation.publicKey = pair.publicKey();
+    console.log(newWallet.keyInformation.secretKey + " : " + newWallet.keyInformation.publicKey );
 
+    /*create key part end*/
+
+    /*make a new wallet start*/
 
     try {
         const response = await fetch(
           `https://friendbot.stellar.org?addr=${encodeURIComponent(
-            pair.publicKey(),
+            newWallet.keyInformation.publicKey
           )}`,
         );
         const responseJSON = await response.json();
@@ -54,14 +62,55 @@ exports.add = async (req,res,next) =>{
       } catch (e) {
         console.error("ERROR!", e);
       }
+
+    /*make a new wallet end*/
+
+/// connect stellar.net............end
+
+    try {
+        const response = await fetch(
+          `https://friendbot.stellar.org?addr=${encodeURIComponent(
+            pair.publicKey(),
+          )}`,
+        )
+        .then(async function () {
+
+            // get coinlist information
+            try{
+                // the JS SDK uses promises for most actions, such as retrieving an account
+                const account = await stellarServer.loadAccount(newWallet.keyInformation.publicKey);
+                console.log("Balances for account: " + newWallet.keyInformation.publicKey);
+                // const account = await stellarServer.loadAccount(pair.publicKey());
+                // console.log("Balances for account: " + pair.publicKey());
+                var coinValue = 0 ;
+                newWallet.coinList=[];
+                account.balances.forEach(function (balance) {
+                    console.log("Type:", balance.asset_type, ", Balance:", balance.balance)
+                    newWallet.coinList[coinValue]= {coinName : balance.asset_type , quantity: balance.balance} ;
+                    if(balance.asset_type =="native")
+                        newWallet.coinList[coinValue].coinName =  "XLM";
+                    coinValue++;
+                });
+
+            }catch (e) {
+                console.error("ERROR!", e);
+            }
+            // const responseJSON = await response.json();
+            // console.log("SUCCESS! You have a new account :)\n", responseJSON);
+
+        })
+      } catch (e) {
+        console.error("ERROR!", e);
+      }
       
 /// connect stellar.net............end
+
     console.log("newWallet");
     console.log(newWallet);
     console.log("newWallet");
     var save = await newWallet.save();
     if(!save){
-      return res.send( { status :false,error : "server error"});
+      return res.send( { status :false,error : "stellarServer error"});
     }else{
          console.log("A new wallet was added!");
          var wallet = await Wallet.findOne(filter);
